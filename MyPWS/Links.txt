@@ -1,0 +1,20 @@
+﻿https://www.c-sharpcorner.com/article/how-to-connect-mysql-with-asp-net-core/
+https://dev.mysql.com/doc/connector-net/en/connector-net-entityframework-core.html
+package manager consolle: Scaffold-DbContext "server=localhost;port=3306;user=root;password=Kerb2182*;database=pwsstore" MySql.Data.EntityFrameworkCore -OutputDir pwsstore -f
+https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-3.1&tabs=visual-studio
+https://docs.microsoft.com/en-us/aspnet/core/performance/caching/memory?view=aspnetcore-3.1
+
+
+
+https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-3.1
+
+https://restfulapi.net/resource-naming/
+
+https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.1&tabs=visual-studio
+https://github.com/domaindrivendev/Swashbuckle.AspNetCore
+https://auth0.com/blog/how-to-build-and-secure-web-apis-with-aspnet-core-3/
+
+https://docs.microsoft.com/en-us/aspnet/web-api/overview/web-api-routing-and-actions/create-a-rest-api-with-attribute-routing
+
+
+https://blog.mindgaze.tech/2018/10/05/storing-secrets-in-net-core-applications/

@@ -1,0 +1,242 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MyPWS</name>
+    </assembly>
+    <members>
+        <member name="T:MyPWS.API.Cache.CachePwsWeather">
+            <summary>
+            For API post method caching last request and PWS entity
+            </summary>
+        </member>
+        <member name="M:MyPWS.API.Controllers.Base.cacheFindPWS(System.String,System.String)">
+            <summary>
+            chache station DB key and last upload request
+            </summary>        
+            <returns></returns>
+        </member>
+        <member name="T:MyPWS.API.Controllers.pwsController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:MyPWS.API.Controllers.pwsController.GetPws">
+            <summary>
+            return registred pws list
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MyPWS.API.Controllers.pwsController.GetPws(System.String,System.String)">
+            <summary>
+            return datail of pws
+            </summary>
+            <param name="id">station id</param>
+            <param name="pwd">station password</param>
+            <returns></returns>
+        </member>
+        <member name="M:MyPWS.API.Controllers.pwsController.PostPws(MyPWS.API.Models.dto.PWSDetail,System.String)">
+            <summary>
+            add new pws
+            </summary>
+            <param name="pws"></param>
+            <param name="secret"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:MyPWS.API.Controllers.weatherController.GetWeather(System.String,System.String)">
+             <summary>
+             returns last stored pws data
+             </summary>
+             <remarks>
+             Sample request:/api/pws/weather/yourStationID/yourStationPassword
+            
+             </remarks>
+             <param name="id"></param>
+             <param name="pwd"></param>
+             <returns></returns>
+             <response code = "404">PWS not found by ID and PASSWORD, or found any data to response</response>
+             <response code = "200">last stored PWS data</response>
+        </member>
+        <member name="M:MyPWS.API.Controllers.weatherController.PostPwsUpoad(System.String,System.String,MyPWS.API.Models.dto.WeatherImperial)">
+             <summary>
+             add weather record for pws
+             </summary>
+             /// <remarks>
+             Sample request:
+            
+                 POST
+                 { 		
+                         "Dateutc": "now",
+                         "Baromin": 1,
+                         "Dailyrainin": 1,
+                         "Rainin": 2,
+                         "Dewptf": 3,
+                         "Humidity": 10,
+                         "Tempf": 1.2558,
+                         "Uv": 10,    
+                         "Winddir": 25,
+                         "Windspeedmph": 1,
+                         "Windgustmph": 10,		
+                         "Windgustdir": 10,
+                         "Indoortempf": 10,
+                         "Indoorhumidity": 100    
+                     }
+            
+             </remarks>
+             <param name="weatherImperial">measured weather data</param>
+             <returns>code 200, if data stored sucesfully </returns>
+             <response code = "401">PWS not found by ID and PASSWORD</response>
+             <response code = "200">data sucesfully stored</response>
+             <response code="400">If the item is null</response>   
+        </member>
+        <member name="T:MyPWS.API.Converters.ImperialToMetric">
+            <summary>
+            convert imperial system to metric system
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:MyPWS.API.Converters.ImperialToMetric.MercInchToHpa(System.Nullable{System.Decimal})" -->
+        <member name="M:MyPWS.API.Converters.ImperialToMetric.InchesToMilimeters(System.Nullable{System.Decimal})">
+            <summary>
+            convert inches to milimeters 
+            1 inches to mm = 25.4 mm
+            </summary>
+            <param name="inches"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MyPWS.API.Converters.ImperialToMetric.FarenheitToCelsius(System.Nullable{System.Decimal})">
+            <summary>
+            convert farenheit to celsius
+            </summary>
+            <param name="farenheit"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MyPWS.API.Converters.ImperialToMetric.MphToKmh(System.Nullable{System.Decimal})">
+            <summary>
+            convert miles per hour to kilometers to hour
+            </summary>
+            <param name="mph"></param>
+            <returns></returns>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherBase.Dateutc">
+            <summary>
+            data log time UTC if "now" or can´t parse to date time then now
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherBase.Humidity">
+            <summary>
+            % outdoor humidity 0-100%
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherBase.Uv">
+            <summary>
+            index
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherBase.Winddir">
+            <summary>
+            0-360 instantaneous wind direction]
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherBase.Windgustdir">
+            <summary>
+            0-360 using software specific time period
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherBase.Indoorhumidity">
+            <summary>
+            % indoor humidity 0-100
+            </summary>
+        </member>
+        <member name="T:MyPWS.API.Models.dto.WeatherImperial">
+            <summary>
+            weatherstation data, imperial values
+            based on https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US	
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherImperial.Baromin">
+            <summary>
+            - barometric pressure inches
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherImperial.Dailyrainin">
+            <summary>
+            rain inches so far today in local time
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherImperial.Rainin">
+            <summary>
+            rain inches over the past hour -- the accumulated rainfall in the past 60 min
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherImperial.Dewptf">
+            <summary>
+            F outdoor dewpoint F
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherImperial.Tempf">
+            <summary>
+            F outdoor temperature
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherImperial.Windspeedmph">
+            <summary>
+            mph instantaneous wind speed
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherImperial.Windgustmph">
+            <summary>
+            mph current wind gust, using software specific time period
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherImperial.Indoortempf">
+            <summary>
+            F indoor temperature F
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherMetric.Baromhpa">
+            <summary>
+            - barometric pressure hectopascals
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherMetric.Dailyrainmm">
+            <summary>
+            rain milimeters so far today in local time
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherMetric.Rainmm">
+            <summary>
+            rain milimeters over the past hour -- the accumulated rainfall in the past 60 min
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherMetric.Dewptc">
+            <summary>
+            F outdoor dewpoint C
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherMetric.Tempc">
+            <summary>
+            C outdoor temperature
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherMetric.Windspeedkmh">
+            <summary>
+            kmh instantaneous wind speed
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherMetric.Windgustkmh">
+            <summary>
+            kmh current wind gust
+            </summary>
+        </member>
+        <member name="P:MyPWS.API.Models.dto.WeatherMetric.Indoortempc">
+            <summary>
+             indoor temperature C
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:MyPWS.API.Models.extensions.ModelExtensions.ToWeather(MyPWS.API.Models.dto.WeatherImperial)" -->
+        <member name="F:MyPWS.Constants.PWSTimeout">
+            <summary>
+            PWS maximum chache period afrer this period can by stored same data as previous 
+            </summary>
+        </member>
+    </members>
+</doc>
