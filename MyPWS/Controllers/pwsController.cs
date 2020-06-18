@@ -82,13 +82,18 @@ namespace MyPWS.API.Controllers
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]        
         public async Task<ActionResult<PWSDetail>> PostPws(PWSDetail pws, string secret)
         {
 
             if (secret != _configuration.GetValue<string>("PSWAddSecret"))
             {
                 return Unauthorized();
+            }
+            var exists = await _context.Pws.FirstOrDefaultAsync(p => p.Id == pws.Id);
+            if (exists != null)
+            {
+                return NotFound("can't add pws");
             }
 
             _context.Pws.Add(new Pws() {Alt = pws.Alt, Desc = pws.Desc, Id = pws.Id, Lat = pws.Lat, Lon  = pws.Lon, Name = pws.Name,  Pwd = pws.Pwd});

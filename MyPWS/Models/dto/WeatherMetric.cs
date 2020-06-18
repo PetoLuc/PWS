@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MyPWS.API.Models.dto
 {
-	public class WeatherMetric :  WeatherBase
+	public class WeatherMetric :  WeatherBase, IEquatable<WeatherMetric>
 	{
 		
 		/// <summary>
@@ -51,5 +48,29 @@ namespace MyPWS.API.Models.dto
 		///  indoor temperature C
 		/// </summary>
 		public decimal? Indoortempc { get; set; }
+
+
+		public bool Equals(WeatherMetric other)
+		{
+			if (other == null) return false;
+			if (this.Baromhpa != other.Baromhpa ||
+				this.Dailyrainmm != other.Dailyrainmm ||
+				this.Dewptc != other.Dewptc ||
+				this.Humidity != other.Humidity ||
+				this.Indoorhumidity != other.Indoorhumidity ||
+				this.Indoortempc != other.Indoortempc ||
+				this.Rainmm!= other.Rainmm ||
+				this.Tempc != other.Tempc ||
+				this.Uv != other.Uv ||
+				this.Winddir != other.Winddir ||
+				this.Windgustdir != other.Windgustdir ||
+				this.Windgustkmh != other.Windgustkmh ||
+				this.Windspeedkmh != other.Windspeedkmh
+				)
+			{
+				return false;
+			}
+			return true;
+		}
 	}
 }

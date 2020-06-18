@@ -1,11 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
+
 
 namespace MyPWS.API.Models.dto
 {
@@ -60,7 +54,7 @@ namespace MyPWS.API.Models.dto
 		public decimal? Indoortempf { get; set; }
 		
 
-		public bool Equals([AllowNull] WeatherImperial other)
+		public bool Equals(WeatherImperial other)
 		{
 			if (other == null) return false;
 			if (this.Baromin != other.Baromin ||

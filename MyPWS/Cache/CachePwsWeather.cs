@@ -1,5 +1,6 @@
 ﻿using MyPWS.API.Models;
 using MyPWS.API.Models.dto;
+using MyPWS.Models.pwsstore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,6 @@ namespace MyPWS.API.Cache
 	{
 
 		public int IdPws { get; set; }
-		public WeatherImperial lastPwsWeather { get; set; }
+		public Weather lastPwsWeather { get; set; }
 	}
 }

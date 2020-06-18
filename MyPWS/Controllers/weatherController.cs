@@ -91,7 +91,6 @@ namespace MyPWS.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]        
         public async Task<IActionResult> PostPwsUpoad(string id, string pwd, [FromBody] WeatherImperial weatherImperial)
         {            
-
             //get pws and they last requet from cache - chache timeout in Constants.PWSTimeout, after this period is chache refreshed, and same request can by writed 
             CachePwsWeather cachedWeather = await cacheFindPWS(id, pwd);
             //no PWS foud by pwsData.PWSId
@@ -99,35 +98,19 @@ namespace MyPWS.API.Controllers
             {
                 return Unauthorized(Constants.NoPWS);
             }
-            if (!weatherImperial.Equals(cachedWeather.lastPwsWeather))
-            {
-                
-                Weather addWeather = weatherImperial.ToWeather();
-                //set found / cached id 
-
-				//when wind dust speed is 0 then, not store, wind wane direction is from last wind direction 
-                addWeather.IdPws = cachedWeather.IdPws;
-				if ((addWeather.Windgustkmh ?? 0) == 0)
-				{
-					addWeather.Windgustdir = null;
-				}
-
-				//when wind  speed is 0 then, not store, wind wane direction is from last wind direction 
-				if ((addWeather.Windspeedkmh ?? 0) == 0)
-				{
-					addWeather.Winddir = null;
-			}		
-
+              
+           Weather addWeather = weatherImperial.ToWeather();
+			//set found / cached id 
+			if (!addWeather.Equals(cachedWeather.lastPwsWeather))
+			{				
+				addWeather.IdPws = cachedWeather.IdPws;				
                 //insert 
                 _context.Weather.Add(addWeather);
                 await _context.SaveChangesAsync();
-				cachedWeather.lastPwsWeather = weatherImperial;
-
-
+				cachedWeather.lastPwsWeather = addWeather;
 			}
             return Ok();            
-        }
-       
+        }       
 	}
 }
 

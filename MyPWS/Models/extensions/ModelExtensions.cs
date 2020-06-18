@@ -11,8 +11,7 @@ namespace MyPWS.API.Models.extensions
 	public static class ModelExtensions
 	{
         /// <summary>
-        /// convert input protocol class as TDO model to Pwsupload entity
-        /// https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-3.1&tabs=visual-studio#over-post
+        /// convert input protocol class as TDO model to weather entity, round to 1 decimal point        
         /// </summary>
         /// <param name="weatherImperial"></param>
         /// <returns></returns>
@@ -36,7 +35,7 @@ namespace MyPWS.API.Models.extensions
                 Indoortempc = ImperialToMetric.FarenheitToCelsius(weatherImperial.Indoortempf),
                 Rainmm = ImperialToMetric.InchesToMilimeters(weatherImperial.Rainin),
                 Tempc = ImperialToMetric.FarenheitToCelsius(weatherImperial.Tempf),
-                Uv = weatherImperial.Uv,
+                Uv = weatherImperial.Uv.HasValue ? decimal.Round(weatherImperial.Uv.Value, Constants.DecimalPrecision):weatherImperial.Uv,
                 Winddir = weatherImperial.Winddir,
                 Windgustdir = weatherImperial.Windgustdir,
                 Windgustkmh = ImperialToMetric.MphToKmh(weatherImperial.Windgustmph),

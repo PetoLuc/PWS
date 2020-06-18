@@ -21,7 +21,7 @@ namespace MyPWS.API.Converters
         {
             if (!mectInch.HasValue) return null;
 
-            return mectInch * (decimal)33.86389;
+            return  decimal.Round( mectInch.Value * (decimal)33.86389, Constants.DecimalPrecision);
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace MyPWS.API.Converters
         public static decimal? InchesToMilimeters(decimal? inches)
         {
             if (!inches.HasValue) return null;
-            return inches * (decimal)25.4;
+            return decimal.Round(inches.Value * (decimal)25.4, Constants.DecimalPrecision);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace MyPWS.API.Converters
         public static decimal? FarenheitToCelsius(decimal? farenheit)
         {
             if (!farenheit.HasValue) return null;
-            return (farenheit - 32) * 5 / 9;
+            return decimal.Round((farenheit.Value - 32) * 5 / 9, Constants.DecimalPrecision);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace MyPWS.API.Converters
         public static decimal? MphToKmh(decimal? mph)
         {
             if (!mph.HasValue) return null;
-            return mph * (decimal)1.60934;
+            return decimal.Round( mph.Value * (decimal)1.60934, Constants.DecimalPrecision);
         }
     }
 }

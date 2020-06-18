@@ -54,11 +54,8 @@ namespace MyPws
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-		{
-
-			app.UsePhp(new PhpRequestOptions(scriptAssemblyName: "PHP"));
+		{			
 			app.UseSwagger();
-
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
@@ -70,10 +67,6 @@ namespace MyPws
 			});
 
 			app.UseRouting();
-
-			//app.UseAuthorization();
-
-
 
 			app.UseEndpoints(endpoints =>
 			{

@@ -1,6 +1,6 @@
 ﻿<?php
 
-
+try{
 //resend data from garni arcus 1055 to MyPWS API
 //https://github.com/buffy007/garni/blob/master/updateweatherstation.php
 //https://thisinterestsme.com/sending-json-via-post-php/
@@ -54,4 +54,7 @@ try{
 	curl_exec($ch);
 	curl_close($ch);
 	}catch (Exception $e){}
-return 'success';
+	}
+	catch(Exception $e)
+	{}
+echo 'success';
