@@ -183,11 +183,7 @@ namespace MyPWS.Models.pwsstore
 
                 entity.Property(e => e.Winddir)
                     .HasColumnName("winddir")
-                    .HasColumnType("smallint unsigned");
-
-                entity.Property(e => e.Windgustdir)
-                    .HasColumnName("windgustdir")
-                    .HasColumnType("smallint unsigned");
+                    .HasColumnType("smallint unsigned");                
 
                 entity.Property(e => e.Windgustkmh)
                     .HasColumnName("windgustkmh")

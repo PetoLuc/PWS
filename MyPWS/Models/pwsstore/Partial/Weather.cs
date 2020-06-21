@@ -16,8 +16,7 @@ namespace MyPWS.Models.pwsstore
 				this.Rainmm != other.Rainmm ||
 				this.Tempc != other.Tempc ||
 				this.Uv != other.Uv ||
-				this.Winddir != other.Winddir ||
-				this.Windgustdir != other.Windgustdir ||
+				this.Winddir != other.Winddir ||				
 				this.Windgustkmh != other.Windgustkmh ||
 				this.Windspeedkmh != other.Windspeedkmh
 				)

@@ -97,18 +97,8 @@ namespace MyPWS.API.Controllers
             if (cachedWeather == null)
             {
                 return Unauthorized(Constants.NoPWS);
-            }
-              
-           Weather addWeather = weatherImperial.ToWeather();
-			//set found / cached id 
-			if (!addWeather.Equals(cachedWeather.lastPwsWeather))
-			{				
-				addWeather.IdPws = cachedWeather.IdPws;				
-                //insert 
-                _context.Weather.Add(addWeather);
-                await _context.SaveChangesAsync();
-				cachedWeather.lastPwsWeather = addWeather;
-			}
+            }                         			
+				cachedWeather.lastWeatherSet.Add(weatherImperial.ToWeather());			
             return Ok();            
         }       
 	}

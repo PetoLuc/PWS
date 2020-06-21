@@ -1,5 +1,6 @@
 ﻿using MyPWS.API.Converters;
 using MyPWS.API.Models.dto;
+using MyPWS.Models.extensions;
 using MyPWS.Models.pwsstore;
 using System;
 using System.Collections.Generic;
@@ -36,8 +37,7 @@ namespace MyPWS.API.Models.extensions
                 Rainmm = ImperialToMetric.InchesToMilimeters(weatherImperial.Rainin),
                 Tempc = ImperialToMetric.FarenheitToCelsius(weatherImperial.Tempf),
                 Uv = weatherImperial.Uv.HasValue ? decimal.Round(weatherImperial.Uv.Value, Constants.DecimalPrecision):weatherImperial.Uv,
-                Winddir = weatherImperial.Winddir,
-                Windgustdir = weatherImperial.Windgustdir,
+                Winddir = weatherImperial.Winddir,                
                 Windgustkmh = ImperialToMetric.MphToKmh(weatherImperial.Windgustmph),
                 Windspeedkmh = ImperialToMetric.MphToKmh(weatherImperial.Windspeedmph)
             };
@@ -57,11 +57,40 @@ namespace MyPWS.API.Models.extensions
                 Rainmm = pwsUpload.Rainmm,
                 Tempc = pwsUpload.Tempc,
                 Uv = pwsUpload.Uv,
-                Winddir = pwsUpload.Winddir,
-                Windgustdir = pwsUpload.Windgustdir,
+                Winddir = pwsUpload.Winddir,                
                 Windgustkmh = pwsUpload.Windgustkmh,
                 Windspeedkmh = pwsUpload.Windspeedkmh
             };
         }
-    }
+
+        public static (decimal? speed, short? direction) vectorAvg(this List<Weather> lstWeather, Func<Weather, decimal?> speed, Func<Weather, short?> direction)
+        {
+
+            if (lstWeather == null || lstWeather.Count == 0)
+            {
+                return (null, null);
+            }
+            double sinSum = 0;
+            double cosSum = 0;
+            int cnt = 0;
+
+            foreach (Weather weather in lstWeather)
+            {
+                decimal? spd = speed(weather);
+                short? dir = direction(weather);
+                //both must by not null
+                if (spd != null && dir != null)
+                {
+                    sinSum += Math.Sin(dir.Value.ConvertToRadians()) * Convert.ToDouble(spd.Value);
+                    cosSum += Math.Cos(dir.Value.ConvertToRadians()) * Convert.ToDouble(spd.Value);
+                    cnt++;
+                }
+            }
+
+            decimal avgspeed = (decimal)Math.Round(Math.Sqrt(Math.Pow(sinSum / cnt, 2) + Math.Pow(cosSum / cnt, 2)), Constants.DecimalPrecision);
+            short resDir = (short)Math.Round((Math.Atan2(sinSum, cosSum).ConvertToDegress() + 360) % 360, 0);
+            return (avgspeed, resDir);
+        }
+		
+	}
 }

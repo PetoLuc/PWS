@@ -15,6 +15,6 @@ namespace MyPWS.API.Cache
 	{
 
 		public int IdPws { get; set; }
-		public Weather lastPwsWeather { get; set; }
+		public List<Weather> lastWeatherSet { get; set; }
 	}
 }

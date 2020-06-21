@@ -14,8 +14,7 @@ namespace MyPWS.Models.pwsstore
         public decimal? Baromhpa { get; set; }
         public short? Winddir { get; set; }
         public decimal? Windspeedkmh { get; set; }
-        public decimal? Windgustkmh { get; set; }
-        public short? Windgustdir { get; set; }
+        public decimal? Windgustkmh { get; set; }        
         public decimal? Uv { get; set; }
         public decimal? Rainmm { get; set; }
         public decimal? Dailyrainmm { get; set; }
