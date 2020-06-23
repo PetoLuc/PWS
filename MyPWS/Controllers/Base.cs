@@ -12,85 +12,72 @@ using System.Reflection;
 using MyPWS.Models.extensions;
 using MyPWS.API.Models.dto;
 using MyPWS.API.Models.extensions;
+using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.Contracts;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Hosting;
+using System.Threading;
 
 namespace MyPWS.API.Controllers
 {
     public class Base : ControllerBase
     {
         protected readonly pwsstoreContext _context;
-        private IMemoryCache _memCache;        
-        
+        private IMemoryCache _memCache;
+        private IServiceScopeFactory _serviceFactory;
 
-        public Base(IMemoryCache memoryCache, pwsstoreContext context)
+        public Base(IMemoryCache memoryCache, pwsstoreContext context, IServiceScopeFactory serviceFactory)
         {
             _memCache = memoryCache;
-            _context = context;            
+            _context = context;
+            _serviceFactory = serviceFactory;
         }
 
-        private void cacheEvicted(object key, object value, EvictionReason reason, object state)
-        {
-            if (value == null)
-                return;
-            CachePwsWeather cacheWeather = (CachePwsWeather)value;
-            List<Weather> lstWeather = cacheWeather.lastWeatherSet;
+        private async void cacheEvicted(object key, object value, EvictionReason reason, object state)
+        {            
+            CacheWeather cacheWeather = (CacheWeather)value;            
+            Weather[] arrWeather = new Weather[cacheWeather.lastWeatherSet.Count];
+             cacheWeather.lastWeatherSet.CopyTo(arrWeather); //skopirujeme do pola
+            await Task.Factory.StartNew(async() =>{ await average(cacheWeather, arrWeather); });
+        }
 
-            if (lstWeather ==null || lstWeather.Count == 0)
+        protected async Task average(CacheWeather cacheWeather, Weather[] lstWeather)
+        {
+            if (lstWeather == null || lstWeather.Length == 0)
                 return;
-         
-            foreach (var weatherByHour in lstWeather.GroupBy(w => w.Dateutc.Hour))
+            var insWeather = lstWeather.GroupBy(w => w.Dateutc.DayOfYear).GetAverage(windgustMax: true).ToList();
+            insWeather.ForEach(w => w.IdPws = cacheWeather.IdPws);               
+            using (var scope = _serviceFactory.CreateScope())
             {
-                Weather insWeather = new Weather()
-                {
-                    //rount safe
-                    Baromhpa = lstWeather.Average(w => w.Baromhpa),
-                    Dailyrainmm = lstWeather.Max(w => w.Dailyrainmm),
-                    Dateutc = lstWeather.Max(w => w.Dateutc),
-                    Dewptc = lstWeather.Average(w => w.Dewptc),
-                    Humidity = (short?)lstWeather.Average(w => w.Humidity),
-                    Indoorhumidity = (short?)lstWeather.Average(w => w.Indoorhumidity),
-                    Indoortempc = lstWeather.Average(w => w.Indoortempc),
-                    Rainmm = lstWeather.Max(w => w.Rainmm),
-                    Tempc = lstWeather.Average(w => w.Tempc),
-                    Uv = lstWeather.Average(w => w.Uv),
-                    Windgustkmh = lstWeather.Max(w => w.Windgustkmh),                    
-                };
-                (insWeather.Windspeedkmh, insWeather.Winddir) = lstWeather.vectorAvg(w => w.Windspeedkmh, w => w.Winddir);                
-            }                                
-            //insert 
-            //_context.Weather.Add(addWeathe6r);
-            //await _context.SaveChangesAsync();
+                pwsstoreContext context = scope.ServiceProvider.GetRequiredService<pwsstoreContext>();
+                await context.Weather.AddRangeAsync(insWeather);
+                await context.SaveChangesAsync();
+            }
         }
+		
 
 
-        /// <summary>
-        /// chache station DB key and last upload request
-        /// </summary>        
-        /// <returns></returns>
-        protected async Task<CachePwsWeather> cacheFindPWS(string id, string pwd)
+		/// <summary>
+		/// chache station DB key and last upload request
+		/// </summary>        
+		/// <returns></returns>
+		protected async Task<CacheWeather> getPWS(string id, string pwd)
         {
+            
             string key = CacheKeys.PWS + id;
 
-            if (!_memCache.TryGetValue(key, out CachePwsWeather weather))
+            if (!_memCache.TryGetValue(key, out CacheWeather cacheWeather))
             {
                 //not in cache                
                 //TODO on change password cache must by reseted
                 int? IdPws = await _context.Pws.Where(pws => pws.Id == id && pws.Pwd == pwd).Select(pws => pws.IdPws).FirstOrDefaultAsync();
                 if (IdPws.HasValue && IdPws > 0)
                 {
-                    //pws exists in db store, add to cache
-                    /*RegisterPostEvictionCallback(
-            (key, value, reason, substate) =>
-            {
-                //tu spocitanie priemeru / maxima a ulozenie
-
-                var _result = $"'{key}':'{value}' was evicted because: {reason}";
-
-
-            })*/
-
-                    _memCache.Set(key, weather = new CachePwsWeather() { IdPws = IdPws.Value, lastWeatherSet = new List<Weather>() }, new MemoryCacheEntryOptions().RegisterPostEvictionCallback(cacheEvicted).SetAbsoluteExpiration(TimeSpan.FromSeconds(10)));                 }
+                    _memCache.Set(key, cacheWeather = new CacheWeather() { IdPws = IdPws.Value, lastWeatherSet = new List<Weather>() }, 
+                        new MemoryCacheEntryOptions().RegisterPostEvictionCallback(cacheEvicted).SetAbsoluteExpiration(TimeSpan.FromSeconds(Constants.PWSTimeout)));
+                }
             }
-            return weather;
+            return cacheWeather;
         }
     }
 }

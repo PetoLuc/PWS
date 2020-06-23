@@ -11,7 +11,7 @@ namespace MyPWS.API.Cache
 	/// <summary>
 	/// For API post method caching last request and PWS entity
 	/// </summary>
-	public class CachePwsWeather
+	public class CacheWeather
 	{
 
 		public int IdPws { get; set; }

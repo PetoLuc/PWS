@@ -24,7 +24,7 @@ namespace MyPws
 		public void ConfigureServices(IServiceCollection services)
 		{
 			//"server=c072um.forpsi.com;port=3306;user=f134044;password=bfTfSgsp;database=f134044"
-			services.AddDbContext<pwsstoreContext>(options => options.UseMySQL(Configuration.GetConnectionString("PWSStore")));
+			services.AddDbContext<pwsstoreContext>(options => options.UseMySQL(Configuration.GetConnectionString("PWSStore")),ServiceLifetime.Scoped);						
 			services.AddControllers();
 			services.AddMemoryCache();
 			services.AddSwaggerGen(c =>
@@ -49,12 +49,12 @@ namespace MyPws
 				});
 				//var filePath = Path.Combine(System.AppContext.BaseDirectory, "MyPWS.xml");
 				//c.IncludeXmlComments(filePath);
-			});
+			});			
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-		{			
+		{				
 			app.UseSwagger();
 			if (env.IsDevelopment())
 			{
@@ -72,6 +72,7 @@ namespace MyPws
 			{
 				endpoints.MapControllers();
 			});
+			
 		}
 	}
 }

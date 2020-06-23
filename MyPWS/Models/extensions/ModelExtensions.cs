@@ -36,7 +36,7 @@ namespace MyPWS.API.Models.extensions
                 Indoortempc = ImperialToMetric.FarenheitToCelsius(weatherImperial.Indoortempf),
                 Rainmm = ImperialToMetric.InchesToMilimeters(weatherImperial.Rainin),
                 Tempc = ImperialToMetric.FarenheitToCelsius(weatherImperial.Tempf),
-                Uv = weatherImperial.Uv.HasValue ? decimal.Round(weatherImperial.Uv.Value, Constants.DecimalPrecision):weatherImperial.Uv,
+                Uv = weatherImperial.Uv,
                 Winddir = weatherImperial.Winddir,                
                 Windgustkmh = ImperialToMetric.MphToKmh(weatherImperial.Windgustmph),
                 Windspeedkmh = ImperialToMetric.MphToKmh(weatherImperial.Windspeedmph)
@@ -63,10 +63,10 @@ namespace MyPWS.API.Models.extensions
             };
         }
 
-        public static (decimal? speed, short? direction) vectorAvg(this List<Weather> lstWeather, Func<Weather, decimal?> speed, Func<Weather, short?> direction)
+        public static (decimal? speed, short? direction) vectorAvg(this IEnumerable<Weather> lstWeather, Func<Weather, decimal?> speed, Func<Weather, short?> direction)
         {
 
-            if (lstWeather == null || lstWeather.Count == 0)
+            if (lstWeather == null || lstWeather.Count() == 0)
             {
                 return (null, null);
             }
@@ -91,6 +91,47 @@ namespace MyPWS.API.Models.extensions
             short resDir = (short)Math.Round((Math.Atan2(sinSum, cosSum).ConvertToDegress() + 360) % 360, 0);
             return (avgspeed, resDir);
         }
-		
-	}
+
+        /// <summary>
+        /// calculate average values 
+        /// </summary>
+        /// <param name="weathers"></param>
+        /// /// <param name="windgustMax">true - return max gust, false - return average gust</param>
+        /// <returns></returns>
+        public static IEnumerable<Weather> GetAverage(this IEnumerable<IGrouping<int, Weather>> weathers, bool windgustMax = false)
+        {
+            foreach (IEnumerable<Weather> weatherByHour in weathers)
+            {
+                Weather insWeather = new Weather()
+                {
+                    //rount safe
+                    Baromhpa = weatherByHour.Average(w => w.Baromhpa),
+                    Dailyrainmm = weatherByHour.Max(w => w.Dailyrainmm),
+                    //date of first record 
+                    Dateutc = weatherByHour.Max(w => w.Dateutc),
+                    Dewptc = weatherByHour.Average(w => w.Dewptc),
+                    Humidity = (short?)weatherByHour.Average(w => w.Humidity),
+                    Indoorhumidity = (short?)weatherByHour.Average(w => w.Indoorhumidity),
+                    Indoortempc = weatherByHour.Average(w => w.Indoortempc),
+                    Rainmm = weatherByHour.Max(w => w.Rainmm),
+                    Tempc = weatherByHour.Average(w => w.Tempc),
+                    Uv = weatherByHour.Average(w => w.Uv),                    
+                };
+
+                if (!windgustMax) //average gust speed
+                {
+                    short? dir;
+                    (insWeather.Windgustkmh, dir) = weatherByHour.vectorAvg(w => w.Windgustkmh, w => w.Winddir);
+                }
+                else //max gust speed
+                {
+                    insWeather.Windgustkmh = weatherByHour.Max(w => w.Windgustkmh);
+                }
+
+                (insWeather.Windspeedkmh, insWeather.Winddir) = weatherByHour.vectorAvg(w => w.Windspeedkmh, w => w.Winddir);
+                yield return insWeather;
+            }
+        }
+
+    }
 }

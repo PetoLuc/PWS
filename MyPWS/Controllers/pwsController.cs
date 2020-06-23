@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using MyPWS.API.Cache;
 using MyPWS.API.Models.dto;
 using MyPWS.Models.pwsstore;
@@ -21,7 +22,7 @@ namespace MyPWS.API.Controllers
     public class pwsController : Base
     {
         Microsoft.Extensions.Configuration.IConfiguration _configuration;
-        public pwsController(IMemoryCache memoryCache, pwsstoreContext context, Microsoft.Extensions.Configuration.IConfiguration configuration) : base(memoryCache, context)
+        public pwsController(IMemoryCache memoryCache, pwsstoreContext context, IServiceScopeFactory serviceFactory, Microsoft.Extensions.Configuration.IConfiguration configuration) : base(memoryCache, context, serviceFactory)
         {
             _configuration = configuration;
         }
@@ -56,7 +57,7 @@ namespace MyPWS.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PWSDetail>> GetPws(string id, string pwd)
         {
-             CachePwsWeather cachePwsWeather =  await cacheFindPWS(id, pwd);
+             CacheWeather cachePwsWeather =  await getPWS(id, pwd);
             if (cachePwsWeather == null)
             {
                 return NotFound(Constants.NoPWS);

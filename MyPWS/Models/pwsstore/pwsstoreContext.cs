@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Configuration;
 
 namespace MyPWS.Models.pwsstore
 {
@@ -20,7 +18,15 @@ namespace MyPWS.Models.pwsstore
         public virtual DbSet<Configwunderground> Configwunderground { get; set; }
         public virtual DbSet<Pws> Pws { get; set; }
         public virtual DbSet<Weather> Weather { get; set; }
-  
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseMySQL("server=localhost;port=3306;user=root;password=*******;database=pwsstore");
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -139,11 +145,11 @@ namespace MyPWS.Models.pwsstore
 
                 entity.Property(e => e.Baromhpa)
                     .HasColumnName("baromhpa")
-                    .HasColumnType("decimal(7,3) unsigned");
+                    .HasColumnType("decimal(6,2) unsigned");
 
                 entity.Property(e => e.Dailyrainmm)
                     .HasColumnName("dailyrainmm")
-                    .HasColumnType("decimal(5,2) unsigned");
+                    .HasColumnType("decimal(6,2) unsigned");
 
                 entity.Property(e => e.Dateutc)
                     .HasColumnName("dateutc")
@@ -151,7 +157,7 @@ namespace MyPWS.Models.pwsstore
 
                 entity.Property(e => e.Dewptc)
                     .HasColumnName("dewptc")
-                    .HasColumnType("decimal(5,2)");
+                    .HasColumnType("decimal(3,1)");
 
                 entity.Property(e => e.Humidity)
                     .HasColumnName("humidity")
@@ -167,31 +173,31 @@ namespace MyPWS.Models.pwsstore
 
                 entity.Property(e => e.Indoortempc)
                     .HasColumnName("indoortempc")
-                    .HasColumnType("decimal(5,2)");
+                    .HasColumnType("decimal(3,1)");
 
                 entity.Property(e => e.Rainmm)
                     .HasColumnName("rainmm")
-                    .HasColumnType("decimal(5,2) unsigned");
+                    .HasColumnType("decimal(6,2) unsigned");
 
                 entity.Property(e => e.Tempc)
                     .HasColumnName("tempc")
-                    .HasColumnType("decimal(5,2)");
+                    .HasColumnType("decimal(3,1)");
 
                 entity.Property(e => e.Uv)
                     .HasColumnName("uv")
-                    .HasColumnType("decimal(5,2) unsigned");
+                    .HasColumnType("decimal(3,1) unsigned");
 
                 entity.Property(e => e.Winddir)
                     .HasColumnName("winddir")
-                    .HasColumnType("smallint unsigned");                
+                    .HasColumnType("smallint unsigned");
 
                 entity.Property(e => e.Windgustkmh)
                     .HasColumnName("windgustkmh")
-                    .HasColumnType("decimal(5,2) unsigned");
+                    .HasColumnType("decimal(4,1) unsigned");
 
                 entity.Property(e => e.Windspeedkmh)
                     .HasColumnName("windspeedkmh")
-                    .HasColumnType("decimal(5,2) unsigned");
+                    .HasColumnType("decimal(4,1) unsigned");
 
                 entity.HasOne(d => d.IdPwsNavigation)
                     .WithMany(p => p.Weather)

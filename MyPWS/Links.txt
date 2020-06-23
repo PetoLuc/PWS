@@ -1,6 +1,6 @@
 ﻿https://www.c-sharpcorner.com/article/how-to-connect-mysql-with-asp-net-core/
 https://dev.mysql.com/doc/connector-net/en/connector-net-entityframework-core.html
-package manager consolle: Scaffold-DbContext "server=localhost;port=3306;user=root;password=Kerb2182*;database=pwsstore" MySql.Data.EntityFrameworkCore -OutputDir pwsstore -f
+package manager consolle Scaffold-DbContext "server=localhost;port=3306;user=root;password=Kerb2182*;database=pwsstore" MySql.Data.EntityFrameworkCore  -OutputDir Models\pwsstore -f
 https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-3.1&tabs=visual-studio
 https://docs.microsoft.com/en-us/aspnet/core/performance/caching/memory?view=aspnetcore-3.1
 
@@ -18,3 +18,8 @@ https://docs.microsoft.com/en-us/aspnet/web-api/overview/web-api-routing-and-act
 
 
 https://blog.mindgaze.tech/2018/10/05/storing-secrets-in-net-core-applications/
+https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/
+
+
+//nastuduj
+https://wakeupandcode.com/logging-in-asp-net-core-3-1/

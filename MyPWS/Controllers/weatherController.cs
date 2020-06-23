@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using MyPWS.API.Cache;
 using MyPWS.API.Models.dto;
 using MyPWS.API.Models.extensions;
@@ -16,7 +17,7 @@ namespace MyPWS.API.Controllers
     [ApiController]
     public class weatherController : Base
     {
-		public weatherController(IMemoryCache memoryCache, pwsstoreContext context) : base(memoryCache, context)
+		public weatherController(IMemoryCache memoryCache, pwsstoreContext context, IServiceScopeFactory serviceFactory) : base(memoryCache, context, serviceFactory)
 		{
 		}
 
@@ -38,7 +39,7 @@ namespace MyPWS.API.Controllers
 		public async Task<ActionResult<WeatherMetric>> GetWeather(string id, string pwd)
 		{
 
-			CachePwsWeather cachedWeather = await cacheFindPWS(id, pwd);
+			CacheWeather cachedWeather = await getPWS(id, pwd);
 			//no PWS foud by pwsData.PWSId
 			if (cachedWeather == null)
 			{
@@ -89,19 +90,19 @@ namespace MyPWS.API.Controllers
 		[HttpPost("{id}/{pwd}/[controller]")]
         [ProducesResponseType(StatusCodes.Status200OK)]        
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]        
-        public async Task<IActionResult> PostPwsUpoad(string id, string pwd, [FromBody] WeatherImperial weatherImperial)
+        public async Task<IActionResult> PostWeather(string id, string pwd, [FromBody] WeatherImperial weatherImperial)
         {            
             //get pws and they last requet from cache - chache timeout in Constants.PWSTimeout, after this period is chache refreshed, and same request can by writed 
-            CachePwsWeather cachedWeather = await cacheFindPWS(id, pwd);
+            CacheWeather cachedWeather = await getPWS(id, pwd);
             //no PWS foud by pwsData.PWSId
             if (cachedWeather == null)
             {
                 return Unauthorized(Constants.NoPWS);
-            }                         			
-				cachedWeather.lastWeatherSet.Add(weatherImperial.ToWeather());			
+            }
+			Weather weather = weatherImperial.ToWeather();
+			weather.IdPws =  cachedWeather.IdPws;
+			cachedWeather.lastWeatherSet.Add(weather);			
             return Ok();            
         }       
 	}
 }
-
-

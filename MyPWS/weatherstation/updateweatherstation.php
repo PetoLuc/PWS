@@ -1,6 +1,6 @@
 ﻿<?php
 
-try{
+
 //resend data from garni arcus 1055 to MyPWS API
 //https://github.com/buffy007/garni/blob/master/updateweatherstation.php
 //https://thisinterestsme.com/sending-json-via-post-php/
@@ -32,7 +32,7 @@ foreach ($_GET as  $key => $value) {
 	}
 }
 
-try{
+
 	//resend wunderground - temporally allowed, then disable a use in own server 
 	//https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US
 	$export = 'rtupdate.wunderground.com/weatherstation/updateweatherstation.php?'.$_SERVER['QUERY_STRING'];
@@ -43,7 +43,6 @@ try{
 	}catch (Exception $e){}
 
 
-try{
 //send to my server
 	$json = substr($json, 0, -1);
 	$json.='}';
@@ -53,8 +52,5 @@ try{
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));  	
 	curl_exec($ch);
 	curl_close($ch);
-	}catch (Exception $e){}
-	}
-	catch(Exception $e)
-	{}
+
 echo 'success';
