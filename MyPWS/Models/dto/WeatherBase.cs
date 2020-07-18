@@ -10,11 +10,6 @@ namespace MyPWS.API.Models.dto
 	{
 
 		/// <summary>
-		/// data log time UTC if "now" or can´t parse to date time then now
-		/// </summary>
-		public string Dateutc { get; set; }
-
-		/// <summary>
 		/// % outdoor humidity 0-100%
 		/// </summary>
 		public short? Humidity { get; set; }
@@ -38,5 +33,6 @@ namespace MyPWS.API.Models.dto
 		/// % indoor humidity 0-100
 		/// </summary>
 		public short? Indoorhumidity { get; set; }
+
 	}
 }

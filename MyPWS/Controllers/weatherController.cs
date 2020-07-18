@@ -1,13 +1,16 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using MyPWS.API.Cache;
 using MyPWS.API.Models.dto;
 using MyPWS.API.Models.extensions;
 using MyPWS.Models.pwsstore;
+using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MyPWS.API.Controllers
@@ -15,7 +18,7 @@ namespace MyPWS.API.Controllers
 	[Produces("application/json")]
 	[Route("pws")]    
     [ApiController]
-    public class weatherController : Base
+    public class weatherController : internalCacheController
     {
 		public weatherController(IMemoryCache memoryCache, pwsstoreContext context, IServiceScopeFactory serviceFactory) : base(memoryCache, context, serviceFactory)
 		{
@@ -35,24 +38,25 @@ namespace MyPWS.API.Controllers
 		/// <returns></returns>
 		/// <response code = "404">PWS not found by ID and PASSWORD, or found any data to response</response>
 		/// <response code = "200">last stored PWS data</response>
-		[HttpGet("{id}/{pwd}/[controller]")]		
+		[HttpGet("{id}/{pwd}/[controller]")]
 		public async Task<ActionResult<WeatherMetric>> GetWeather(string id, string pwd)
 		{
-
-			CacheWeather cachedWeather = await getPWS(id, pwd);
+			CacheWeather cachedWeather = await getCachePws(id, pwd);
 			//no PWS foud by pwsData.PWSId
 			if (cachedWeather == null)
 			{
 				return NotFound(Constants.NoPWS);
 			}
-			int IdPws = cachedWeather.IdPws;			
-			Weather weather = await _context.Weather.Where(p => p.IdPws == IdPws).OrderByDescending(p => p.Id).FirstOrDefaultAsync<Weather>();
-			if (weather == null)
+			Weather lastWeather = cachedWeather.lastWeatherSet.LastOrDefault();
+			if (lastWeather == null)
+			{
+				lastWeather = await _context.Weather.Where(p => p.IdPws == cachedWeather.IdPws).OrderByDescending(p => p.Id).FirstOrDefaultAsync<Weather>();
+			}
+			if (lastWeather == null)
 			{
 				return NotFound(Constants.NoPWSData);
 			}
-			return weather.ToWeatherMetric();
-			
+			return lastWeather.ToWeatherMetric();
 		}
 
 
@@ -89,16 +93,35 @@ namespace MyPWS.API.Controllers
 		/// <response code="400">If the item is null</response>   
 		[HttpPost("{id}/{pwd}/[controller]")]
         [ProducesResponseType(StatusCodes.Status200OK)]        
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]        
-        public async Task<IActionResult> PostWeather(string id, string pwd, [FromBody] WeatherImperial weatherImperial)
-        {            
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> PostWeather(string id, string pwd, [FromBody] WeatherImperial weatherImperial)
+        {
+			DateTime now = DateTime.UtcNow;
             //get pws and they last requet from cache - chache timeout in Constants.PWSTimeout, after this period is chache refreshed, and same request can by writed 
-            CacheWeather cachedWeather = await getPWS(id, pwd);
+            CacheWeather cachedWeather = await getCachePws(id, pwd);			
+
             //no PWS foud by pwsData.PWSId
             if (cachedWeather == null)
             {
                 return Unauthorized(Constants.NoPWS);
             }
+			Weather lastWeather =  cachedWeather.lastWeatherSet.LastOrDefault();			
+			if (lastWeather != null )
+			{
+				TimeSpan tmLastUpdate = now - lastWeather.Dateutc;
+				//the shortest update interval is owerflow
+				if (tmLastUpdate < Constants.ShortestUploadInterval)
+				{
+					Thread.Sleep(Constants.ShortestUploadInterval - tmLastUpdate);
+					//await Task.Delay(Constants.ShortestUploadInterval - tmLastUpdate);
+				}				
+			}
+			string checkRangeError = string.Empty;
+			if (!weatherImperial.CheckRange(ref checkRangeError))
+			{
+				return ValidationProblem(checkRangeError);
+			}
 			Weather weather = weatherImperial.ToWeather();
 			weather.IdPws =  cachedWeather.IdPws;
 			cachedWeather.lastWeatherSet.Add(weather);			

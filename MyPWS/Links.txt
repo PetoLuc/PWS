@@ -22,4 +22,5 @@ https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/
 
 
 //nastuduj
+https://michaelscodingspot.com/logging-in-dotnet/
 https://wakeupandcode.com/logging-in-asp-net-core-3-1/

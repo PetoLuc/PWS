@@ -5,6 +5,8 @@ using MyPWS.Models.pwsstore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace MyPWS.API.Models.extensions
@@ -17,17 +19,12 @@ namespace MyPWS.API.Models.extensions
         /// <param name="weatherImperial"></param>
         /// <returns></returns>
         public static Weather ToWeather(this WeatherImperial weatherImperial)
-        {
-            if (!DateTime.TryParse(weatherImperial.Dateutc, out DateTime date))
-            {
-                date = DateTime.UtcNow;
-            }
-
+        {            
             return new Weather
             {
                 Baromhpa = ImperialToMetric.MercInchToHpa(weatherImperial.Baromin),
                 Dailyrainmm = ImperialToMetric.InchesToMilimeters(weatherImperial.Dailyrainin),
-                Dateutc = date,
+                Dateutc = DateTime.UtcNow,
                 Dewptc = ImperialToMetric.FarenheitToCelsius(weatherImperial.Dewptf),
                 Humidity = weatherImperial.Humidity,
                 //Id = null,
@@ -42,14 +39,54 @@ namespace MyPWS.API.Models.extensions
                 Windspeedkmh = ImperialToMetric.MphToKmh(weatherImperial.Windspeedmph)
             };
         }
+        
+        /// <summary>
+        /// check inpyt values ranges if are real
+        /// </summary>
+        /// <param name="weatherImperial"></param>
+        /// <param name="checkErrorDescription"></param>
+        /// <returns></returns>
+        public static bool CheckRange(this WeatherImperial weatherImperial, ref string checkErrorDescription)        
+        {
+            List<bool> results = new List<bool>();
+            List<string> errors = new List<string>();
+            //temperatures
+            results.Add(weatherImperial.Tempf.IsWithin(nameof(weatherImperial.Tempf), Constants.RangeTempF, ref errors));
+            results.Add(weatherImperial.Indoortempf.IsWithin(nameof(weatherImperial.Indoortempf), Constants.RangeTempF, ref errors));
+            results.Add(weatherImperial.Dewptf.IsWithin(nameof(weatherImperial.Dewptf), Constants.RangeTempF, ref errors));
+            //humidity
+            results.Add(((decimal?)weatherImperial.Humidity).IsWithin(nameof(weatherImperial.Humidity), Constants.RangeHumi, ref errors));
+            results.Add(((decimal?)weatherImperial.Indoorhumidity).IsWithin(nameof(weatherImperial.Indoorhumidity), Constants.RangeHumi, ref errors));
+            //baro
+            results.Add(((decimal?)weatherImperial.Baromin).IsWithin(nameof(weatherImperial.Baromin), Constants.RangeBaroIn, ref errors));
+            //wind dir
+            results.Add(((decimal?)weatherImperial.Winddir).IsWithin(nameof(weatherImperial.Winddir), Constants.RangeWindDirDeg, ref errors));
+            results.Add(((decimal?)weatherImperial.Windgustdir).IsWithin(nameof(weatherImperial.Windgustdir), Constants.RangeWindDirDeg, ref errors));
+            //wind speed
+            results.Add(((decimal?)weatherImperial.Windspeedmph).IsWithin(nameof(weatherImperial.Windspeedmph), Constants.RangeWindSpeedMpH, ref errors));
+            results.Add(((decimal?)weatherImperial.Windgustmph).IsWithin(nameof(weatherImperial.Windgustmph), Constants.RangeWindSpeedMpH, ref errors));
+            //uv
+            results.Add(((decimal?)weatherImperial.Uv).IsWithin(nameof(weatherImperial.Uv), Constants.RangeUV, ref errors));
+            //rain  
+            results.Add(((decimal?)weatherImperial.Rainin).IsWithin(nameof(weatherImperial.Rainin), Constants.RangeRainIn, ref errors));
+            results.Add(((decimal?)weatherImperial.Dailyrainin).IsWithin(nameof(weatherImperial.Dailyrainin), Constants.RangeRainIn, ref errors));
+            
+
+            checkErrorDescription = JsonSerializer.Serialize(errors);
+            return results.All(r => r ==true);                        
+        }
+
+        //private static string addRangeErrorDesc(object checkedObject, Constants.range range)
+        //{
+        //    return $"{nameof(checkedObject)}: {checkedObject} is out of range from:  {range.MinValue} to: {range.MaxValue}";
+        //}
 
         public static WeatherMetric ToWeatherMetric(this Weather pwsUpload)
         {
             return new WeatherMetric
             {
                 Baromhpa = pwsUpload.Baromhpa,
-                Dailyrainmm = pwsUpload.Dailyrainmm,
-                Dateutc = pwsUpload.Dateutc.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
+                Dailyrainmm = pwsUpload.Dailyrainmm,                
                 Dewptc = pwsUpload.Dewptc,
                 Humidity = pwsUpload.Humidity,
                 Indoorhumidity = pwsUpload.Indoorhumidity,
@@ -87,7 +124,7 @@ namespace MyPWS.API.Models.extensions
                 }
             }
 
-            decimal avgspeed = (decimal)Math.Round(Math.Sqrt(Math.Pow(sinSum / cnt, 2) + Math.Pow(cosSum / cnt, 2)), Constants.DecimalPrecision);
+            decimal avgspeed = (decimal)Math.Sqrt(Math.Pow(sinSum / cnt, 2) + Math.Pow(cosSum / cnt, 2));
             short resDir = (short)Math.Round((Math.Atan2(sinSum, cosSum).ConvertToDegress() + 360) % 360, 0);
             return (avgspeed, resDir);
         }
@@ -100,35 +137,35 @@ namespace MyPWS.API.Models.extensions
         /// <returns></returns>
         public static IEnumerable<Weather> GetAverage(this IEnumerable<IGrouping<int, Weather>> weathers, bool windgustMax = false)
         {
-            foreach (IEnumerable<Weather> weatherByHour in weathers)
+            foreach (IEnumerable<Weather> weatherByDay in weathers)
             {
                 Weather insWeather = new Weather()
                 {
                     //rount safe
-                    Baromhpa = weatherByHour.Average(w => w.Baromhpa),
-                    Dailyrainmm = weatherByHour.Max(w => w.Dailyrainmm),
-                    //date of first record 
-                    Dateutc = weatherByHour.Max(w => w.Dateutc),
-                    Dewptc = weatherByHour.Average(w => w.Dewptc),
-                    Humidity = (short?)weatherByHour.Average(w => w.Humidity),
-                    Indoorhumidity = (short?)weatherByHour.Average(w => w.Indoorhumidity),
-                    Indoortempc = weatherByHour.Average(w => w.Indoortempc),
-                    Rainmm = weatherByHour.Max(w => w.Rainmm),
-                    Tempc = weatherByHour.Average(w => w.Tempc),
-                    Uv = weatherByHour.Average(w => w.Uv),                    
+                    Baromhpa = weatherByDay.Average(w => w.Baromhpa),
+                    Dailyrainmm = weatherByDay.Max(w => w.Dailyrainmm),
+                    //date of last record 
+                    Dateutc = DateTime.Now, //current timestamp
+                    Dewptc = weatherByDay.Average(w => w.Dewptc),
+                    Humidity = (short?)weatherByDay.Average(w => w.Humidity),
+                    Indoorhumidity = (short?)weatherByDay.Average(w => w.Indoorhumidity),
+                    Indoortempc = weatherByDay.Average(w => w.Indoortempc),
+                    Rainmm = weatherByDay.Max(w => w.Rainmm),
+                    Tempc = weatherByDay.Average(w => w.Tempc),
+                    Uv = weatherByDay.Average(w => w.Uv),                    
                 };
 
                 if (!windgustMax) //average gust speed
                 {
                     short? dir;
-                    (insWeather.Windgustkmh, dir) = weatherByHour.vectorAvg(w => w.Windgustkmh, w => w.Winddir);
+                    (insWeather.Windgustkmh, dir) = weatherByDay.vectorAvg(w => w.Windgustkmh, w => w.Winddir);
                 }
                 else //max gust speed
                 {
-                    insWeather.Windgustkmh = weatherByHour.Max(w => w.Windgustkmh);
+                    insWeather.Windgustkmh = weatherByDay.Max(w => w.Windgustkmh);
                 }
 
-                (insWeather.Windspeedkmh, insWeather.Winddir) = weatherByHour.vectorAvg(w => w.Windspeedkmh, w => w.Winddir);
+                (insWeather.Windspeedkmh, insWeather.Winddir) = weatherByDay.vectorAvg(w => w.Windspeedkmh, w => w.Winddir);
                 yield return insWeather;
             }
         }

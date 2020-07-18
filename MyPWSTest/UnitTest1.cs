@@ -20,8 +20,12 @@ namespace MyPWSTest
 		//https://docs.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking		
 		//https://github.com/moq/moq4
 		[Fact]
-		public void Test1()
+		public void ValidValueronebilionSingleThread()
 		{
+
+			var requestInfo = new { Url = "https://myurl.com/data", Payload = 12 };
+			string sss  = "Request info is {@requestInfo}";
+
 			//Arrange
 			ServiceCollection sc = new ServiceCollection();
 			sc.AddDbContext<pwsstoreContext>(opt => opt.UseInMemoryDatabase("pwsStore"), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
@@ -60,32 +64,32 @@ namespace MyPWSTest
 			//mock.Setup(x => x.Set<Pws>()).Returns( } )
 
 			//ID = IDETVA4 & PASSWORD = shvzwfGf & action = updateraww & realtime = 1 & rtfreq = 5 & dateutc = now & baromin = 30.00 & tempf = 56.1 & humidity = 64 & windspeedmph = 1.5 & windgustmph = 1.5 & winddir = 290 & dewptf = 44.0 & rainin = 0 & dailyrainin = 0.06 & UV = 2.1 & indoortempf = 71.2 & indoorhumidity = 62
-			weatherController wc = new weatherController(sProvider.GetService<IMemoryCache>(), sProvider.GetService<pwsstoreContext>());
-			for (int i = 0 ;  i < 100000000; i++ )
-				{
+			weatherController wc = new weatherController(sProvider.GetService<IMemoryCache>(), sProvider.GetService<pwsstoreContext>(), sProvider.GetService<IServiceScopeFactory>());
+			for (int i = 0; i < 100000000; i++)
+			{
 				var xxx = wc.PostWeather(
 					testPws.Id,
 					testPws.Pwd,
 					new MyPWS.API.Models.dto.WeatherImperial
 					{
-						Baromin = rand.Next(0, 1500),
-						Dailyrainin = rand.Next(0, 999),
-						Dateutc = DateTime.UtcNow.AddMinutes(i*10).ToString(),
-						Dewptf = rand.Next(-100, 100),
+						Baromin = rand.Next( 0, 40),
+						Dailyrainin = rand.Next(0, 300),						
+						Dewptf = rand.Next(-125, 140),
 						Humidity = (short)rand.Next(0, 100),
 						Indoorhumidity = (short)rand.Next(0, 100),
-						Indoortempf = rand.Next(-100, 100),
-						Rainin = rand.Next(0, 999),
-						Tempf = rand.Next(-100, 100),
-						Uv = rand.Next(0, 30),
-						Winddir = 50,
+						Indoortempf = rand.Next(-125, 140),
+						Rainin = rand.Next(0, 300),
+						Tempf = rand.Next(-125, 140),
+						Uv = rand.Next(0, 50),
+						Winddir = (short)rand.Next(0, 360),
 						Windgustdir = null,
-						Windgustmph = 100 + i,
-						Windspeedmph = 50 + i
+						Windgustmph = rand.Next(0, 300),
+						Windspeedmph = rand.Next(0, 300)
 					});
-				//Thread.Sleep(10);
-				if(i % 10000 == 1)
-				System.Diagnostics.Debug.WriteLine(_context.Weather.Count());
+				if (i % 10000 == 1)
+				{
+					System.Diagnostics.Debug.WriteLine(_context.Weather.Count());
+				}
 			}
 		}	
 	}

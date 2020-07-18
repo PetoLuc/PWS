@@ -20,33 +20,24 @@ using System.Threading;
 
 namespace MyPWS.API.Controllers
 {
-    public class Base : ControllerBase
+    public class internalCacheController : ControllerBase
     {
         protected readonly pwsstoreContext _context;
         private IMemoryCache _memCache;
         private IServiceScopeFactory _serviceFactory;
 
-        public Base(IMemoryCache memoryCache, pwsstoreContext context, IServiceScopeFactory serviceFactory)
+        protected internalCacheController(IMemoryCache memoryCache, pwsstoreContext context, IServiceScopeFactory serviceFactory)
         {
             _memCache = memoryCache;
             _context = context;
             _serviceFactory = serviceFactory;
         }
 
-        private async void cacheEvicted(object key, object value, EvictionReason reason, object state)
-        {            
-            CacheWeather cacheWeather = (CacheWeather)value;            
-            Weather[] arrWeather = new Weather[cacheWeather.lastWeatherSet.Count];
-             cacheWeather.lastWeatherSet.CopyTo(arrWeather); //skopirujeme do pola
-            await Task.Factory.StartNew(async() =>{ await average(cacheWeather, arrWeather); });
-        }
 
-        protected async Task average(CacheWeather cacheWeather, Weather[] lstWeather)
-        {
-            if (lstWeather == null || lstWeather.Length == 0)
-                return;
+        protected async Task storeCachedWeatherData(int IdPws, IEnumerable<Weather> lstWeather)
+        {                        
             var insWeather = lstWeather.GroupBy(w => w.Dateutc.DayOfYear).GetAverage(windgustMax: true).ToList();
-            insWeather.ForEach(w => w.IdPws = cacheWeather.IdPws);               
+            insWeather.ForEach(w => w.IdPws = IdPws);
             using (var scope = _serviceFactory.CreateScope())
             {
                 pwsstoreContext context = scope.ServiceProvider.GetRequiredService<pwsstoreContext>();
@@ -54,18 +45,16 @@ namespace MyPWS.API.Controllers
                 await context.SaveChangesAsync();
             }
         }
-		
 
 
-		/// <summary>
-		/// chache station DB key and last upload request
-		/// </summary>        
-		/// <returns></returns>
-		protected async Task<CacheWeather> getPWS(string id, string pwd)
+
+        /// <summary>
+        /// chache station DB key and last upload request
+        /// </summary>        
+        /// <returns></returns>
+        protected async Task<CacheWeather> getCachePws(string id, string pwd)
         {
-            
             string key = CacheKeys.PWS + id;
-
             if (!_memCache.TryGetValue(key, out CacheWeather cacheWeather))
             {
                 //not in cache                
@@ -73,11 +62,22 @@ namespace MyPWS.API.Controllers
                 int? IdPws = await _context.Pws.Where(pws => pws.Id == id && pws.Pwd == pwd).Select(pws => pws.IdPws).FirstOrDefaultAsync();
                 if (IdPws.HasValue && IdPws > 0)
                 {
-                    _memCache.Set(key, cacheWeather = new CacheWeather() { IdPws = IdPws.Value, lastWeatherSet = new List<Weather>() }, 
-                        new MemoryCacheEntryOptions().RegisterPostEvictionCallback(cacheEvicted).SetAbsoluteExpiration(TimeSpan.FromSeconds(Constants.PWSTimeout)));
+                    _memCache.Set(key, cacheWeather = new CacheWeather() { IdPws = IdPws.Value, lastWeatherSet = new List<Weather>() },
+                        new MemoryCacheEntryOptions().RegisterPostEvictionCallback(async (object key, object value, EvictionReason reason, object state) =>
+                        {
+                            CacheWeather cacheWeather = (CacheWeather)value;                            
+                            await Task.Run(async () => { await storeCachedWeatherData(cacheWeather.IdPws, cacheWeather.lastWeatherSet); });
+                        }, this).SetAbsoluteExpiration(Constants.weatherPostCacheTimeout));
                 }
             }
             return cacheWeather;
         }
+
+        protected DateTime GetDateTimeStamp()
+        {
+            throw new NotImplementedException();
+             //todo zober z loggera
+        }
+
     }
 }
