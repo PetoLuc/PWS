@@ -118,6 +118,7 @@ namespace MyPWS.API.Controllers
 				}				
 			}
 			string checkRangeError = string.Empty;
+			weatherImperial.DateUtc = weatherImperial.DateUtc ?? DateTime.UtcNow;
 			if (!weatherImperial.CheckRange(ref checkRangeError))
 			{
 				return ValidationProblem(checkRangeError);

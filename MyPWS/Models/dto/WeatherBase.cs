@@ -8,6 +8,7 @@ namespace MyPWS.API.Models.dto
 {
 	public class WeatherBase
 	{
+		public DateTime? DateUtc { get; set; }
 
 		/// <summary>
 		/// % outdoor humidity 0-100%

@@ -1,0 +1,106 @@
+﻿@page
+@model IndexModel
+@{
+	ViewData["Title"] = "Home page";
+}
+<h1 class="center">PWS data</h1>
+	<div class="container-fluid">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-2">
+					Last update
+				</div>
+				<div class="col-sm-2">
+					@Model.Weather.DateUtc.Value.ToLocalTime()
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2">
+					Barometric pressure
+				</div>
+				<div class="col-sm-2">
+					@Model.Weather.Baromhpa hPa
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2">
+					Out temperature
+				</div>
+				<div class="col-sm-2">
+					@Model.Weather.Tempc C
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2">
+					Out humidity
+				</div>
+				<div class="col-sm-2">
+					@Model.Weather.Humidity %
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2">
+					Indoor temperature
+				</div>
+				<div class="col-sm-2">
+					@Model.Weather.Indoortempc C
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2">
+					Indoor humidity
+				</div>
+				<div class="col-sm-2">
+					@Model.Weather.Indoorhumidity %
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2">
+					Wind dir
+				</div>
+				<div class="col-sm-2">
+					@Model.Weather.Winddir
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2">
+					Wind speed
+				</div>
+				<div class="col-sm-2">
+					@Model.Weather.Windspeedkmh km/h
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2">
+					Wind gust speed
+				</div>
+				<div class="col-sm-2">
+					@Model.Weather.Windgustkmh km/h
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2">
+					Rain
+				</div>
+				<div class="col-sm-2">
+					@Model.Weather.Rainmm mm/h
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2">
+					Daily rain
+				</div>
+				<div class="col-sm-2">
+					@Model.Weather.Dailyrainmm mm/24h
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2">
+					UV
+				</div>
+				<div class="col-sm-2">
+					@Model.Weather.Uv
+				</div>
+			</div>
+		</div>
+	</div>
