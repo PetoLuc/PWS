@@ -23,7 +23,7 @@ foreach ($_GET as  $key => $value) {
 	{
 		if($key=='dateutc')
 		{
-			$json .=  '"' . $key . '":"' . $value . '",';
+			//$json .=  '"' . $key . '":"' . $value . '",';
 		}
 		else 
 		{

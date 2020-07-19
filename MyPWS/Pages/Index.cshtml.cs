@@ -23,7 +23,7 @@ namespace RazorWebApplication.Pages
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private static weatherController weatherController;
 
-		public WeatherMetric Weather { get; private set; }
+		public Dictionary<Pws, WeatherMetric> Weather { get; private set; }
 
 		public IndexModel(ILogger<IndexModel> logger, IMemoryCache memoryCache, pwsstoreContext context, IServiceScopeFactory serviceFactory)
 		{
@@ -36,8 +36,15 @@ namespace RazorWebApplication.Pages
 
 		public async void OnGetAsync()
 		{
-			var res = await weatherController.GetWeather("IDETVA4", "nemam");
-			Weather = res.Value;
+			Weather = new Dictionary<Pws, WeatherMetric>();
+			
+				foreach (var pws in _context.Pws.ToList())
+				{
+					var res = await weatherController.GetWeather(pws.Id, pws.Pwd);
+					Weather.Add(pws, res.Value);
+				}			
+			
+			
 		}
 	}
 }
