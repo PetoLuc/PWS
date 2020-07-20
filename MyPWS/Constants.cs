@@ -20,7 +20,7 @@ namespace MyPWS
 		/// <summary>
 		/// shortest PWSWeather interval for PWS in ms
 		/// </summary>
-		public static TimeSpan ShortestUploadInterval = new TimeSpan(0,0,0,0,500);
+		public static TimeSpan ShortestUploadInterval = new TimeSpan(0,0,0,0,0);
 		public struct range
 		{
 			public short MinValue { get; private set; }

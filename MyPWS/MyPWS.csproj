@@ -25,11 +25,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="swagger\" />
+    <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
+    <Folder Include="Models\pwsstore\Partial\" />
   </ItemGroup>
 
 

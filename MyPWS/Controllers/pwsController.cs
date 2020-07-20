@@ -19,12 +19,18 @@ namespace MyPWS.API.Controllers
 	[Route("[controller]")]
     [Produces("application/json")]
     [ApiController]
-    public class pwsController : internalCacheController
+    public class pwsController : ControllerBase
     {
         Microsoft.Extensions.Configuration.IConfiguration _configuration;
-        public pwsController(IMemoryCache memoryCache, pwsstoreContext context, IServiceScopeFactory serviceFactory, Microsoft.Extensions.Configuration.IConfiguration configuration) : base(memoryCache, context, serviceFactory)
+        IMemoryCache _memoryCache;
+        pwsstoreContext _context;
+        IServiceScopeFactory _serviceFactory;
+        public pwsController(IMemoryCache memoryCache, pwsstoreContext context, IServiceScopeFactory serviceFactory, Microsoft.Extensions.Configuration.IConfiguration configuration) 
         {
             _configuration = configuration;
+            _memoryCache = memoryCache;
+            _context = context;
+            _serviceFactory = serviceFactory;
         }
 
         // GET: api/Pws
@@ -57,7 +63,7 @@ namespace MyPWS.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PWSDetail>> GetPws(string id, string pwd)
         {
-             CacheWeather cachePwsWeather =  await getCachePws(id, pwd);
+			Cache.CacheWeather cachePwsWeather =  await new CacheWeatherLogic(_memoryCache, _context, _serviceFactory).GetPWS(id, pwd);
             if (cachePwsWeather == null)
             {
                 return NotFound(Constants.NoPWS);

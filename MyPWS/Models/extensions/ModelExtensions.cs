@@ -22,10 +22,9 @@ namespace MyPWS.API.Models.extensions
         {            
             return new Weather
             {
-               
+                              
                 Baromhpa = ImperialToMetric.MercInchToHpa(weatherImperial.Baromin),
-                Dailyrainmm = ImperialToMetric.InchesToMilimeters(weatherImperial.Dailyrainin),
-                Dateutc = DateTime.UtcNow,
+                Dailyrainmm = ImperialToMetric.InchesToMilimeters(weatherImperial.Dailyrainin),                
                 Dewptc = ImperialToMetric.FarenheitToCelsius(weatherImperial.Dewptf),
                 Humidity = weatherImperial.Humidity,
                 //Id = null,
@@ -85,7 +84,7 @@ namespace MyPWS.API.Models.extensions
         public static WeatherMetric ToWeatherMetric(this Weather weather)
         {
             return new WeatherMetric
-            {
+            {             
                 DateUtc = weather.Dateutc,
                 Baromhpa = weather.Baromhpa,
                 Dailyrainmm = weather.Dailyrainmm,                
@@ -147,7 +146,7 @@ namespace MyPWS.API.Models.extensions
                     Baromhpa = weatherByDay.Average(w => w.Baromhpa),
                     Dailyrainmm = weatherByDay.Max(w => w.Dailyrainmm),
                     //date of last record 
-                    Dateutc = DateTime.Now, //current timestamp
+                    Dateutc = weatherByDay.Max(w=>w.Dateutc),
                     Dewptc = weatherByDay.Average(w => w.Dewptc),
                     Humidity = (short?)weatherByDay.Average(w => w.Humidity),
                     Indoorhumidity = (short?)weatherByDay.Average(w => w.Indoorhumidity),

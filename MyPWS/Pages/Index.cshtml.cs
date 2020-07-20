@@ -20,8 +20,7 @@ namespace RazorWebApplication.Pages
 		private readonly ILogger<IndexModel> _logger;
 		private readonly IMemoryCache _memoryCache;
 		private readonly pwsstoreContext _context;
-		private readonly IServiceScopeFactory _serviceScopeFactory;
-		private static weatherController weatherController;
+		private readonly IServiceScopeFactory _serviceScopeFactory;		
 
 		public Dictionary<Pws, WeatherMetric> Weather { get; private set; }
 
@@ -31,20 +30,21 @@ namespace RazorWebApplication.Pages
 			_memoryCache = memoryCache;
 			_context = context;
 			_serviceScopeFactory = serviceFactory;
-			weatherController = new weatherController(_memoryCache, _context, _serviceScopeFactory);
+			
 		}
 
 		public async void OnGetAsync()
 		{
 			Weather = new Dictionary<Pws, WeatherMetric>();
-			
-				foreach (var pws in _context.Pws.ToList())
+			var pwss = _context.Pws.ToList();
+			using (var weatherController = new weatherController(_memoryCache, _context, _serviceScopeFactory))
+			{
+				foreach (var pws in pwss)
 				{
 					var res = await weatherController.GetWeather(pws.Id, pws.Pwd);
 					Weather.Add(pws, res.Value);
-				}			
-			
-			
+				}
+			}
 		}
 	}
 }
