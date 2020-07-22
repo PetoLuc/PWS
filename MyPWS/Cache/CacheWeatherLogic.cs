@@ -35,8 +35,7 @@ namespace MyPWS.API.Controllers
 
         protected async Task storeCachedWeatherData(int IdPws, IEnumerable<Weather> lstWeather)
         {                        
-            var insWeather = lstWeather.GroupBy(w => w.Dateutc.DayOfYear).GetAverage(windgustMax: true).ToList();
-            insWeather.ForEach(w => w.IdPws = IdPws);
+            var insWeather = lstWeather.GroupBy(w => w.Dateutc.DayOfYear).GetAverage(windgustMax: true);            
             using (var scope = _serviceFactory.CreateScope())
             {
                 pwsstoreContext context = scope.ServiceProvider.GetRequiredService<pwsstoreContext>();
@@ -62,7 +61,7 @@ namespace MyPWS.API.Controllers
                 int? IdPws = await _context.Pws.Where(pws => pws.Id == id && pws.Pwd == pwd).Select(pws => pws.IdPws).FirstOrDefaultAsync();
                 if (IdPws.HasValue && IdPws > 0)
                 {
-                    _memCache.Set(key, cacheWeather = new CacheWeather() { IdPws = IdPws.Value, lastWeatherSet = new List<Weather>() },
+                    _memCache.Set(key, cacheWeather = new CacheWeather() { IdPws = IdPws.Value, lastWeatherSet = new System.Collections.Concurrent.ConcurrentBag<Weather>() },
                         new MemoryCacheEntryOptions().RegisterPostEvictionCallback(async (object key, object value, EvictionReason reason, object state) =>
                         {
                             CacheWeather cacheWeather = (CacheWeather)value;                            

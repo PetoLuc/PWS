@@ -2,6 +2,7 @@
 using MyPWS.API.Models.dto;
 using MyPWS.Models.pwsstore;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,6 @@ namespace MyPWS.API.Cache
 	{
 
 		public int IdPws { get; set; }
-		public List<Weather> lastWeatherSet { get; set; }
+		public ConcurrentBag<Weather> lastWeatherSet { get; set; }
 	}
 }

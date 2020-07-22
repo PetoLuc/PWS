@@ -16,24 +16,24 @@ using System.Threading.Tasks;
 namespace MyPWS.API.Controllers
 {
 	[Produces("application/json")]
-	[Route("pws")]    
-    [ApiController]
-    public class weatherController : ControllerBase, IDisposable
-    {
+	[Route("pws")]
+	[ApiController]
+	public class weatherController : ControllerBase, IDisposable
+	{
 		IMemoryCache _memoryCache;
 		pwsstoreContext _context;
 		IServiceScopeFactory _serviceFactory;
-		public weatherController(IMemoryCache memoryCache, pwsstoreContext context, IServiceScopeFactory serviceFactory) 
-		{			
+		public weatherController(IMemoryCache memoryCache, pwsstoreContext context, IServiceScopeFactory serviceFactory)
+		{
 			_memoryCache = memoryCache;
 			_context = context;
 			_serviceFactory = serviceFactory;
 		}
 
 		public void Dispose()
-		{			
+		{
 		}
-		
+
 
 		/*https://stackoverflow.com/questions/36280947/how-to-pass-multiple-parameters-to-a-get-method-in-asp-net-core*/
 
@@ -102,42 +102,31 @@ namespace MyPWS.API.Controllers
 		/// <response code = "200">data sucesfully stored</response>
 		/// <response code="400">If the item is null</response>   
 		[HttpPost("{id}/{pwd}/[controller]")]
-        [ProducesResponseType(StatusCodes.Status200OK)]        
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> PostWeather(string id, string pwd, [FromBody] WeatherImperial weatherImperial)
-        {
+		{
 			DateTime now = DateTime.UtcNow;
 			//get pws and they last requet from cache - chache timeout in Constants.PWSTimeout, after this period is chache refreshed, and same request can by writed 
-			Cache.CacheWeather cachedWeather = await new CacheWeatherLogic(_memoryCache, _context, _serviceFactory).GetPWS(id, pwd); 			
-
-            //no PWS foud by pwsData.PWSId
-            if (cachedWeather == null)
-            {
-                return Unauthorized(Constants.NoPWS);
-            }
-
-			if (cachedWeather.lastWeatherSet.Count > 0)
+			Cache.CacheWeather cachedWeather = await new CacheWeatherLogic(_memoryCache, _context, _serviceFactory).GetPWS(id, pwd);
+			//no PWS foud by pwsData.PWSId
+			if (cachedWeather == null)
 			{
-				DateTime lastWeather = cachedWeather.lastWeatherSet.Last().Dateutc;
-				TimeSpan tmLastUpdate = now - lastWeather;
-				//the shortest update interval is owerflow
-				if (tmLastUpdate < Constants.ShortestUploadInterval)
-				{
-					Thread.Sleep(Constants.ShortestUploadInterval - tmLastUpdate);
-					//await Task.Delay(Constants.ShortestUploadInterval - tmLastUpdate);
-				}
+				return Unauthorized(Constants.NoPWS);
 			}
-			string checkRangeError = string.Empty;			
+
+			string checkRangeError = string.Empty;
 			if (!weatherImperial.CheckRange(ref checkRangeError))
 			{
 				return ValidationProblem(checkRangeError);
 			}
 			Weather weather = weatherImperial.ToWeather();
-			weather.IdPws =  cachedWeather.IdPws;
+			weather.IdPws = cachedWeather.IdPws;
 			weather.Dateutc = now;
-			cachedWeather.lastWeatherSet.Add(weather);			
-            return Ok();            
-        }       
+			cachedWeather.lastWeatherSet.Add(weather);
+
+			return Ok();
+		}
 	}
 }

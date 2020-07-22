@@ -146,14 +146,15 @@ namespace MyPWS.API.Models.extensions
                     Baromhpa = weatherByDay.Average(w => w.Baromhpa),
                     Dailyrainmm = weatherByDay.Max(w => w.Dailyrainmm),
                     //date of last record 
-                    Dateutc = weatherByDay.Max(w=>w.Dateutc),
+                    Dateutc = weatherByDay.Max(w => w.Dateutc),
                     Dewptc = weatherByDay.Average(w => w.Dewptc),
                     Humidity = (short?)weatherByDay.Average(w => w.Humidity),
                     Indoorhumidity = (short?)weatherByDay.Average(w => w.Indoorhumidity),
                     Indoortempc = weatherByDay.Average(w => w.Indoortempc),
                     Rainmm = weatherByDay.Max(w => w.Rainmm),
                     Tempc = weatherByDay.Average(w => w.Tempc),
-                    Uv = weatherByDay.Average(w => w.Uv),                    
+                    Uv = weatherByDay.Average(w => w.Uv),
+                    IdPws = weatherByDay.First().IdPws
                 };
 
                 if (!windgustMax) //average gust speed
