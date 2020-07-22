@@ -40,9 +40,13 @@ namespace MyPWS.Models.extensions
 		/// <param name="value"></param>
 		/// <param name="unit"></param>
 		/// <returns></returns>
-		public static string ToTwoDecimalPrecision(this decimal? value, string unit)
+		public static string ToTwoDecimal(this decimal? value, string unit)
 		{
-			return value.HasValue ? $"{Math.Round(value.Value, 2).ToString("0.##")} {unit}"  : string.Empty;
+			return value.HasValue ? $"{value.Value.ToString("0.##")} {unit}"  : string.Empty;
+		}
+		public static string ToOneDecimal(this decimal? value, string unit)
+		{			
+			return value.HasValue ? $"{value.Value.ToString("0.#")} {unit}" : string.Empty;
 		}
 
 		//public static bool IsWithin(this short? value, Constants.range range)

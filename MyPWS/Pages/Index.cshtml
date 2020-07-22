@@ -24,7 +24,7 @@
 			</div>
 			<div class="col-sm-2">
 
-				@Model.Weather[pws].Baromhpa.ToTwoDecimalPrecision("hPa")
+				@Model.Weather[pws].Baromhpa.ToTwoDecimal("hPa")
 			</div>
 		</div>
 		<div class="row">
@@ -32,7 +32,7 @@
 				<div class="font-weight-bold">Out temperature</div>
 			</div>
 			<div class="col-sm-2">
-				@Model.Weather[pws].Tempc.ToTwoDecimalPrecision("C")
+				@Model.Weather[pws].Tempc.ToOneDecimal("C")
 			</div>
 		</div>
 		<div class="row">
@@ -48,7 +48,7 @@
 				<div class="font-weight-bold">Indoor temperature</div>
 			</div>
 			<div class="col-sm-2">
-				@Model.Weather[pws].Indoortempc.ToTwoDecimalPrecision("C")
+				@Model.Weather[pws].Indoortempc.ToOneDecimal("C")
 			</div>
 		</div>
 		<div class="row">
@@ -72,7 +72,7 @@
 				<div class="font-weight-bold">Wind speed</div>
 			</div>
 			<div class="col-sm-2">
-				@Model.Weather[pws].Windspeedkmh.ToTwoDecimalPrecision("km/h")
+				@Model.Weather[pws].Windspeedkmh.ToOneDecimal("km/h")
 			</div>
 		</div>
 		<div class="row">
@@ -80,7 +80,7 @@
 				<div class="font-weight-bold">Wind gust speed</div>
 			</div>
 			<div class="col-sm-2">
-				@Model.Weather[pws].Windgustkmh.ToTwoDecimalPrecision("km/h")
+				@Model.Weather[pws].Windgustkmh.ToOneDecimal("km/h")
 			</div>
 		</div>
 		<div class="row">
@@ -88,7 +88,7 @@
 				<div class="font-weight-bold">Rain</div>
 			</div>
 			<div class="col-sm-2">
-				@Model.Weather[pws].Rainmm.ToTwoDecimalPrecision("mm /h")
+				@Model.Weather[pws].Rainmm.ToOneDecimal("mm /h")
 			</div>
 		</div>
 		<div class="row">
@@ -96,7 +96,7 @@
 				<div class="font-weight-bold">Daily rain</div>
 			</div>
 			<div class="col-sm-2">
-				@Model.Weather[pws].Dailyrainmm.ToTwoDecimalPrecision("mm/24h")
+				@Model.Weather[pws].Dailyrainmm.ToOneDecimal("mm/24h")
 			</div>
 		</div>
 		<div class="row">
