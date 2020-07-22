@@ -61,7 +61,7 @@ namespace MyPWS.API.Controllers
 			Weather lastWeather = cachedWeather.lastWeatherSet.LastOrDefault();
 			if (lastWeather == null)
 			{
-				lastWeather = await _context.Weather.Where(p => p.IdPws == cachedWeather.IdPws).OrderByDescending(p => p.Id).FirstOrDefaultAsync<Weather>();
+				lastWeather = await _context.Weather.Where(p => p.IdPws == cachedWeather.IdPws).OrderByDescending(p => p.Dateutc).FirstOrDefaultAsync<Weather>();
 			}
 			if (lastWeather == null)
 			{
@@ -124,7 +124,7 @@ namespace MyPWS.API.Controllers
 			Weather weather = weatherImperial.ToWeather();
 			weather.IdPws = pwsCache.IdPws;
 			weather.Dateutc = now;
-			pwsCache.lastWeatherSet.Add(weather);
+			pwsCache.lastWeatherSet.Enqueue(weather);
 
 			return Ok();
 		}

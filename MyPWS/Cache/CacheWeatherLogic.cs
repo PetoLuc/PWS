@@ -63,7 +63,7 @@ namespace MyPWS.API.Controllers
                 int? IdPws = await _context.Pws.Where(pws => pws.Id == id && pws.Pwd == pwd).Select(pws => pws.IdPws).FirstOrDefaultAsync();
                 if (IdPws.HasValue && IdPws > 0)
                 {
-                    _memCache.Set(key, cacheWeather = new CacheWeather() { IdPws = IdPws.Value, lastWeatherSet = new ConcurrentBag<Weather>() },
+                    _memCache.Set(key, cacheWeather = new CacheWeather() { IdPws = IdPws.Value, lastWeatherSet = new ConcurrentQueue<Weather>()},
                         new MemoryCacheEntryOptions().RegisterPostEvictionCallback(async (object key, object value, EvictionReason reason, object state) =>
                         {
                             CacheWeather cacheWeather = (CacheWeather)value;                            

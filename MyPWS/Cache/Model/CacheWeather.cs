@@ -16,6 +16,6 @@ namespace MyPWS.API.Cache
 	{
 
 		public int IdPws { get; set; }
-		public ConcurrentBag<Weather> lastWeatherSet { get; set; }
+		public ConcurrentQueue<Weather> lastWeatherSet { get; set; }
 	}
 }
