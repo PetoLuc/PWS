@@ -52,7 +52,7 @@ namespace MyPWS.API.Controllers
 		[HttpGet("{id}/{pwd}/[controller]")]
 		public async Task<ActionResult<WeatherMetric>> GetWeather(string id, string pwd)
 		{
-			Cache.CacheWeather cachedWeather = await new CacheWeatherLogic(_memoryCache, _context, _serviceFactory).GetPWS(id, pwd);
+			Cache.CacheWeather cachedWeather = await new CacheWeatherLogic(_memoryCache, _context, _serviceFactory).GetPWSAsync(id, pwd);
 			//no PWS foud by pwsData.PWSId
 			if (cachedWeather == null)
 			{
@@ -109,9 +109,9 @@ namespace MyPWS.API.Controllers
 		{
 			DateTime now = DateTime.UtcNow;
 			//get pws and they last requet from cache - chache timeout in Constants.PWSTimeout, after this period is chache refreshed, and same request can by writed 
-			Cache.CacheWeather cachedWeather = await new CacheWeatherLogic(_memoryCache, _context, _serviceFactory).GetPWS(id, pwd);
+			CacheWeather pwsCache = await new CacheWeatherLogic(_memoryCache, _context, _serviceFactory).GetPWSAsync(id, pwd);
 			//no PWS foud by pwsData.PWSId
-			if (cachedWeather == null)
+			if (pwsCache == null)
 			{
 				return Unauthorized(Constants.NoPWS);
 			}
@@ -122,9 +122,9 @@ namespace MyPWS.API.Controllers
 				return ValidationProblem(checkRangeError);
 			}
 			Weather weather = weatherImperial.ToWeather();
-			weather.IdPws = cachedWeather.IdPws;
+			weather.IdPws = pwsCache.IdPws;
 			weather.Dateutc = now;
-			cachedWeather.lastWeatherSet.Add(weather);
+			pwsCache.lastWeatherSet.Add(weather);
 
 			return Ok();
 		}

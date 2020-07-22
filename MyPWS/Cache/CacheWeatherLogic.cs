@@ -17,6 +17,7 @@ using System.Diagnostics.Contracts;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Hosting;
 using System.Threading;
+using System.Collections.Concurrent;
 
 namespace MyPWS.API.Controllers
 {
@@ -41,7 +42,8 @@ namespace MyPWS.API.Controllers
                 pwsstoreContext context = scope.ServiceProvider.GetRequiredService<pwsstoreContext>();
                 await context.Weather.AddRangeAsync(insWeather);
                 await context.SaveChangesAsync();
-            }
+            }            
+           
         }
 
 
@@ -50,7 +52,7 @@ namespace MyPWS.API.Controllers
         /// chache station DB key and last upload request
         /// </summary>        
         /// <returns></returns>
-        public async Task<Cache.CacheWeather> GetPWS(string id, string pwd)
+        public async Task<Cache.CacheWeather> GetPWSAsync(string id, string pwd)
         {
             string key = CacheKeys.PWS + id;
 			Cache.CacheWeather cacheWeather = null;
@@ -61,11 +63,12 @@ namespace MyPWS.API.Controllers
                 int? IdPws = await _context.Pws.Where(pws => pws.Id == id && pws.Pwd == pwd).Select(pws => pws.IdPws).FirstOrDefaultAsync();
                 if (IdPws.HasValue && IdPws > 0)
                 {
-                    _memCache.Set(key, cacheWeather = new CacheWeather() { IdPws = IdPws.Value, lastWeatherSet = new System.Collections.Concurrent.ConcurrentBag<Weather>() },
+                    _memCache.Set(key, cacheWeather = new CacheWeather() { IdPws = IdPws.Value, lastWeatherSet = new ConcurrentBag<Weather>() },
                         new MemoryCacheEntryOptions().RegisterPostEvictionCallback(async (object key, object value, EvictionReason reason, object state) =>
                         {
                             CacheWeather cacheWeather = (CacheWeather)value;                            
                             await Task.Run(async () => { await storeCachedWeatherData(cacheWeather.IdPws, cacheWeather.lastWeatherSet); });
+                            cacheWeather.lastWeatherSet.Clear();
                         }, this).SetAbsoluteExpiration(Constants.weatherPostCacheTimeout));
                 }
             }

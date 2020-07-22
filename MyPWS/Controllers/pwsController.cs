@@ -63,7 +63,7 @@ namespace MyPWS.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PWSDetail>> GetPws(string id, string pwd)
         {
-			Cache.CacheWeather cachePwsWeather =  await new CacheWeatherLogic(_memoryCache, _context, _serviceFactory).GetPWS(id, pwd);
+			Cache.CacheWeather cachePwsWeather =  await new CacheWeatherLogic(_memoryCache, _context, _serviceFactory).GetPWSAsync(id, pwd);
             if (cachePwsWeather == null)
             {
                 return NotFound(Constants.NoPWS);

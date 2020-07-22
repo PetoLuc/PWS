@@ -65,7 +65,7 @@ namespace MyPWSTest
 
 			//ID = IDETVA4 & PASSWORD = shvzwfGf & action = updateraww & realtime = 1 & rtfreq = 5 & dateutc = now & baromin = 30.00 & tempf = 56.1 & humidity = 64 & windspeedmph = 1.5 & windgustmph = 1.5 & winddir = 290 & dewptf = 44.0 & rainin = 0 & dailyrainin = 0.06 & UV = 2.1 & indoortempf = 71.2 & indoorhumidity = 62
 			
-			for (int i = 0; i < 100000000; i++)
+			for (int i = 0; i < 1000000000; i++)
 			{
 				weatherController wc = new weatherController(sProvider.GetService<IMemoryCache>(), sProvider.GetService<pwsstoreContext>(), sProvider.GetService<IServiceScopeFactory>());
 				var xxx = wc.PostWeather(
