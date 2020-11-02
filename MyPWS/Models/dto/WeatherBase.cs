@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 namespace MyPWS.API.Models.dto
 {
 	public class WeatherBase
-	{
-
+	{			
 		/// <summary>
 		/// % outdoor humidity 0-100%
 		/// </summary>

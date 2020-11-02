@@ -3,9 +3,10 @@ using System;
 
 namespace MyPWS.API.Models.dto
 {
-	public class WeatherMetric :  WeatherBase//, IEquatable<WeatherMetric>
+	public class WeatherMetric :  WeatherBase
 	{
-		
+		public DateTime DateUtc { get; set; }
+
 		/// <summary>
 		/// - barometric pressure hectopascals
 		/// </summary>
@@ -26,7 +27,6 @@ namespace MyPWS.API.Models.dto
 		/// </summary>
 		public decimal? Dewptc { get; set; }
 
-
 		/// <summary>
 		/// C outdoor temperature
 		/// </summary>
@@ -43,35 +43,9 @@ namespace MyPWS.API.Models.dto
 		/// </summary>
 		public decimal? Windgustkmh { get; set; }
 
-
-
 		/// <summary>
 		///  indoor temperature C
 		/// </summary>
-		public decimal? Indoortempc { get; set; }
-		
-
-		//public bool Equals(WeatherMetric other)
-		//{
-		//	if (other == null) return false;
-		//	if (this.Baromhpa != other.Baromhpa ||
-		//		this.Dailyrainmm != other.Dailyrainmm ||
-		//		this.Dewptc != other.Dewptc ||
-		//		this.Humidity != other.Humidity ||
-		//		this.Indoorhumidity != other.Indoorhumidity ||
-		//		this.Indoortempc != other.Indoortempc ||
-		//		this.Rainmm!= other.Rainmm ||
-		//		this.Tempc != other.Tempc ||
-		//		this.Uv != other.Uv ||
-		//		this.Winddir != other.Winddir ||
-		//		this.Windgustdir != other.Windgustdir ||
-		//		this.Windgustkmh != other.Windgustkmh ||
-		//		this.Windspeedkmh != other.Windspeedkmh
-		//		)
-		//	{
-		//		return false;
-		//	}
-		//	return true;
-		//}
+		public decimal? Indoortempc { get; set; }		
 	}
 }

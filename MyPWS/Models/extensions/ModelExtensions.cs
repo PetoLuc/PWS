@@ -22,9 +22,9 @@ namespace MyPWS.API.Models.extensions
         {            
             return new Weather
             {
+                              
                 Baromhpa = ImperialToMetric.MercInchToHpa(weatherImperial.Baromin),
-                Dailyrainmm = ImperialToMetric.InchesToMilimeters(weatherImperial.Dailyrainin),
-                Dateutc = DateTime.UtcNow,
+                Dailyrainmm = ImperialToMetric.InchesToMilimeters(weatherImperial.Dailyrainin),                
                 Dewptc = ImperialToMetric.FarenheitToCelsius(weatherImperial.Dewptf),
                 Humidity = weatherImperial.Humidity,
                 //Id = null,
@@ -81,22 +81,23 @@ namespace MyPWS.API.Models.extensions
         //    return $"{nameof(checkedObject)}: {checkedObject} is out of range from:  {range.MinValue} to: {range.MaxValue}";
         //}
 
-        public static WeatherMetric ToWeatherMetric(this Weather pwsUpload)
+        public static WeatherMetric ToWeatherMetric(this Weather weather)
         {
             return new WeatherMetric
-            {
-                Baromhpa = pwsUpload.Baromhpa,
-                Dailyrainmm = pwsUpload.Dailyrainmm,                
-                Dewptc = pwsUpload.Dewptc,
-                Humidity = pwsUpload.Humidity,
-                Indoorhumidity = pwsUpload.Indoorhumidity,
-                Indoortempc = pwsUpload.Indoortempc,
-                Rainmm = pwsUpload.Rainmm,
-                Tempc = pwsUpload.Tempc,
-                Uv = pwsUpload.Uv,
-                Winddir = pwsUpload.Winddir,                
-                Windgustkmh = pwsUpload.Windgustkmh,
-                Windspeedkmh = pwsUpload.Windspeedkmh
+            {             
+                DateUtc = weather.Dateutc,
+                Baromhpa = weather.Baromhpa,
+                Dailyrainmm = weather.Dailyrainmm,                
+                Dewptc = weather.Dewptc,
+                Humidity = weather.Humidity,
+                Indoorhumidity = weather.Indoorhumidity,
+                Indoortempc = weather.Indoortempc,
+                Rainmm = weather.Rainmm,
+                Tempc = weather.Tempc,
+                Uv = weather.Uv,
+                Winddir = weather.Winddir,                
+                Windgustkmh = weather.Windgustkmh,
+                Windspeedkmh = weather.Windspeedkmh
             };
         }
 
@@ -145,14 +146,15 @@ namespace MyPWS.API.Models.extensions
                     Baromhpa = weatherByDay.Average(w => w.Baromhpa),
                     Dailyrainmm = weatherByDay.Max(w => w.Dailyrainmm),
                     //date of last record 
-                    Dateutc = DateTime.Now, //current timestamp
+                    Dateutc = weatherByDay.Max(w => w.Dateutc),
                     Dewptc = weatherByDay.Average(w => w.Dewptc),
                     Humidity = (short?)weatherByDay.Average(w => w.Humidity),
                     Indoorhumidity = (short?)weatherByDay.Average(w => w.Indoorhumidity),
                     Indoortempc = weatherByDay.Average(w => w.Indoortempc),
                     Rainmm = weatherByDay.Max(w => w.Rainmm),
                     Tempc = weatherByDay.Average(w => w.Tempc),
-                    Uv = weatherByDay.Average(w => w.Uv),                    
+                    Uv = weatherByDay.Average(w => w.Uv),
+                    IdPws = weatherByDay.First().IdPws
                 };
 
                 if (!windgustMax) //average gust speed

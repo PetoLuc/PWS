@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Org.BouncyCastle.Crypto.Digests;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,21 @@ namespace MyPWS.Models.extensions
 				rangeError?.Add(string.Format(Constants.OutOfRangePattern, valueName, range));
 			}		
 			return inRange;
+		}
+
+		/// <summary>
+		/// convert decimal number to string with 2 decima places precision
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="unit"></param>
+		/// <returns></returns>
+		public static string ToTwoDecimal(this decimal? value, string unit)
+		{
+			return value.HasValue ? $"{value.Value.ToString("0.##")} {unit}"  : string.Empty;
+		}
+		public static string ToOneDecimal(this decimal? value, string unit)
+		{			
+			return value.HasValue ? $"{value.Value.ToString("0.#")} {unit}" : string.Empty;
 		}
 
 		//public static bool IsWithin(this short? value, Constants.range range)

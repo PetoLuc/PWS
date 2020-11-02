@@ -11,16 +11,11 @@ namespace MyPWS
 		public const string NoPWS = "No PWS found";
 		public const string NoPWSData = "No PWS data found";
 		public const string OutOfRangePattern = "{0} isn´t in range {1}";
-
+		
 		/// <summary>
 		/// PWS maximum chache period s afrer this period can by stored same data as previous 
 		/// </summary>
 		public static TimeSpan weatherPostCacheTimeout = new TimeSpan(0, 1, 0);
-
-		/// <summary>
-		/// shortest PWSWeather interval for PWS in ms
-		/// </summary>
-		public static TimeSpan ShortestUploadInterval = new TimeSpan(0,0,0,0,500);
 		public struct range
 		{
 			public short MinValue { get; private set; }

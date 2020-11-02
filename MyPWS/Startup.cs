@@ -27,6 +27,7 @@ namespace MyPws
 			services.AddDbContext<pwsstoreContext>(options => options.UseMySQL(Configuration.GetConnectionString("PWSStore")),ServiceLifetime.Scoped);						
 			services.AddControllers();			
 			services.AddMemoryCache();
+			services.AddRazorPages();
 			services.AddSwaggerGen(c =>
 			{
 				c.SwaggerDoc("v1", new OpenApiInfo
@@ -39,7 +40,7 @@ namespace MyPws
 					{
 						Name = "Peter Lucansky",
 						Email = "plucansky@gmail.com",
-						Url = new Uri("https://github.com/PetoLuc/MyPWS"),
+						Url = new Uri("https://github.com/PetoLuc/PWS"),
 					},
 					//License = new OpenApiLicense
 					//{
@@ -66,11 +67,15 @@ namespace MyPws
 				c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyPWS API V1");
 			});
 
-			app.UseRouting();
+			//app.UseHttpsRedirection();
+			app.UseStaticFiles();
 
+			app.UseRouting();
+			app.UseAuthorization();
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();
+				endpoints.MapRazorPages();
 			});
 			
 		}
