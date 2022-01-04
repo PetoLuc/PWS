@@ -23,16 +23,15 @@ namespace MyPWSTest
 		public void ValidValueronebilionSingleThread()
 		{
 
-			var requestInfo = new { Url = "https://myurl.com/data", Payload = 12 };
-			string sss  = "Request info is {@requestInfo}";
+			var requestInfo = new { Url = "https://myurl.com/data", Payload = 12 };			
 
 			//Arrange
 			ServiceCollection sc = new ServiceCollection();
-			sc.AddDbContext<pwsstoreContext>(opt => opt.UseInMemoryDatabase("pwsStore"), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
+			sc.AddDbContext<PwsStoreContext>(opt => opt.UseInMemoryDatabase("pwsStore"), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
 			var _cache = sc.AddMemoryCache();
 			var sProvider =  sc.BuildServiceProvider();
 
-			var _context = sProvider.GetService<pwsstoreContext>();
+			var _context = sProvider.GetService<PwsStoreContext>();
 			Pws testPws = new Pws { Alt = 520, Desc = "in memory PWS test", Id = "pwsTest", IdPws = 1, Pwd = "pwd" };
 			var rand = new Random();
 			//for (int i = 0; i < 10000000; i++)
@@ -64,7 +63,7 @@ namespace MyPWSTest
 			//mock.Setup(x => x.Set<Pws>()).Returns( } )
 
 			//ID = IDETVA4 & PASSWORD = shvzwfGf & action = updateraww & realtime = 1 & rtfreq = 5 & dateutc = now & baromin = 30.00 & tempf = 56.1 & humidity = 64 & windspeedmph = 1.5 & windgustmph = 1.5 & winddir = 290 & dewptf = 44.0 & rainin = 0 & dailyrainin = 0.06 & UV = 2.1 & indoortempf = 71.2 & indoorhumidity = 62
-			weatherController wc = new weatherController(sProvider.GetService<IMemoryCache>(), sProvider.GetService<pwsstoreContext>(), sProvider.GetService<IServiceScopeFactory>());
+			weatherController wc = new weatherController(sProvider.GetService<IMemoryCache>(), sProvider.GetService<PwsStoreContext>(), sProvider.GetService<IServiceScopeFactory>());
 			for (int i = 0; i < 100000000; i++)
 			{
 				var xxx = wc.PostWeather(

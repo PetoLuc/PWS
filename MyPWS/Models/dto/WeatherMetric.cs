@@ -1,6 +1,4 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using System;
-
+﻿
 namespace MyPWS.API.Models.dto
 {
 	public class WeatherMetric :  WeatherBase//, IEquatable<WeatherMetric>

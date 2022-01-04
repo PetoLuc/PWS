@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using MyPWS.API.Cache;
@@ -20,7 +19,7 @@ namespace MyPWS.API.Controllers
     [ApiController]
     public class weatherController : internalCacheController
     {
-		public weatherController(IMemoryCache memoryCache, pwsstoreContext context, IServiceScopeFactory serviceFactory) : base(memoryCache, context, serviceFactory)
+		public weatherController(IMemoryCache memoryCache, PwsStoreContext context, IServiceScopeFactory serviceFactory) : base(memoryCache, context, serviceFactory)
 		{
 		}
 

@@ -22,7 +22,7 @@ namespace MyPWS.API.Controllers
     public class pwsController : internalCacheController
     {
         Microsoft.Extensions.Configuration.IConfiguration _configuration;
-        public pwsController(IMemoryCache memoryCache, pwsstoreContext context, IServiceScopeFactory serviceFactory, Microsoft.Extensions.Configuration.IConfiguration configuration) : base(memoryCache, context, serviceFactory)
+        public pwsController(IMemoryCache memoryCache, PwsStoreContext context, IServiceScopeFactory serviceFactory, Microsoft.Extensions.Configuration.IConfiguration configuration) : base(memoryCache, context, serviceFactory)
         {
             _configuration = configuration;
         }

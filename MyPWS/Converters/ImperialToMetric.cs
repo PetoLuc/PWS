@@ -16,7 +16,7 @@ namespace MyPWS.API.Converters
         //Pressure(hPa) = Pressure(inHg) × 33.86389
         /// </summary>
         /// <param name="mectInch"></param>
-        /// <returns></returns>
+        /// <returns></returns>        
         public static decimal? MercInchToHpa(decimal? mectInch)
         {
             if (!mectInch.HasValue) return null;

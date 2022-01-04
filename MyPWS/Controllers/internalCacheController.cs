@@ -22,11 +22,11 @@ namespace MyPWS.API.Controllers
 {
     public class internalCacheController : ControllerBase
     {
-        protected readonly pwsstoreContext _context;
+        protected readonly PwsStoreContext _context;
         private IMemoryCache _memCache;
         private IServiceScopeFactory _serviceFactory;
 
-        protected internalCacheController(IMemoryCache memoryCache, pwsstoreContext context, IServiceScopeFactory serviceFactory)
+        protected internalCacheController(IMemoryCache memoryCache, PwsStoreContext context, IServiceScopeFactory serviceFactory)
         {
             _memCache = memoryCache;
             _context = context;
@@ -40,7 +40,7 @@ namespace MyPWS.API.Controllers
             insWeather.ForEach(w => w.IdPws = IdPws);
             using (var scope = _serviceFactory.CreateScope())
             {
-                pwsstoreContext context = scope.ServiceProvider.GetRequiredService<pwsstoreContext>();
+                PwsStoreContext context = scope.ServiceProvider.GetRequiredService<PwsStoreContext>();
                 await context.Weather.AddRangeAsync(insWeather);
                 await context.SaveChangesAsync();
             }
