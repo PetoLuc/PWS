@@ -8,7 +8,7 @@ namespace MyPWS.Models.pwsstore
         public PwsStoreContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<PwsStoreContext>();
-            optionsBuilder.UseSqlServer("SERVER =.; TRUSTED_CONNECTION = yes; DATABASE = PwsStore_design");
+            optionsBuilder.UseSqlServer("SERVER =.\\SqlExpress; TRUSTED_CONNECTION = yes; DATABASE = PwsStore_design", x=>x.UseNetTopologySuite());
             return new PwsStoreContext(optionsBuilder.Options);
         }
     }

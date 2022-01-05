@@ -13,6 +13,7 @@ namespace MyPWS.Models.pwsstore
         public int IdPws { get; set; }
 
         [Required]
+        [Display(Name = "Dátum a čas posledného záznamu")]
         public DateTime Dateutc { get; set; }
         public decimal? Tempc { get; set; }
         public short? Humidity { get; set; }

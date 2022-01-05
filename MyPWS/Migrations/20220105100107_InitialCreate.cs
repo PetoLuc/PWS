@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using NetTopologySuite.Geometries;
 
 #nullable disable
 
@@ -10,22 +11,21 @@ namespace MyPWS.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Pws",
+                name: "PWS",
                 columns: table => new
                 {
                     IdPws = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Id = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Pwd = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: false),
-                    Lat = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Lon = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Alt = table.Column<short>(type: "smallint", nullable: false),
+                    GpsCoordinates = table.Column<Point>(type: "geography", nullable: true),
                     Desc = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Pws", x => x.IdPws);
+                    table.PrimaryKey("PK_PWS", x => x.IdPws);
                 });
 
             migrationBuilder.CreateTable(
@@ -44,9 +44,9 @@ namespace MyPWS.Migrations
                 {
                     table.PrimaryKey("PK_Configwunderground", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Configwunderground_Pws_PwsIdPws",
+                        name: "FK_Configwunderground_PWS_PwsIdPws",
                         column: x => x.PwsIdPws,
-                        principalTable: "Pws",
+                        principalTable: "PWS",
                         principalColumn: "IdPws");
                 });
 
@@ -76,9 +76,9 @@ namespace MyPWS.Migrations
                 {
                     table.PrimaryKey("PK_Weather", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Weather_Pws_PwsIdPws",
+                        name: "FK_Weather_PWS_PwsIdPws",
                         column: x => x.PwsIdPws,
-                        principalTable: "Pws",
+                        principalTable: "PWS",
                         principalColumn: "IdPws");
                 });
 
@@ -102,7 +102,7 @@ namespace MyPWS.Migrations
                 name: "Weather");
 
             migrationBuilder.DropTable(
-                name: "Pws");
+                name: "PWS");
         }
     }
 }

@@ -23,8 +23,9 @@ namespace MyPws
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			//"server=c072um.forpsi.com;port=3306;user=f134044;password=bfTfSgsp;database=f134044"
-			//services.AddDbContext<pwsstoreContext>(options => options.UseMySQL(Configuration.GetConnectionString("PWSStore")),ServiceLifetime.Scoped);						
+			services.AddRazorPages();
+			services.AddDatabaseDeveloperPageExceptionFilter();
+			services.AddDbContext<PwsStoreContext>(options=> options.UseSqlServer("SERVER =.\\SqlExpress; TRUSTED_CONNECTION = yes; DATABASE = PwsStore_design", x=>x.UseNetTopologySuite()));
 			services.AddControllers();			
 			services.AddMemoryCache();
 			services.AddSwaggerGen(c =>
@@ -53,7 +54,7 @@ namespace MyPws
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, PwsStoreContext dc)
 		{				
 			app.UseSwagger();
 			if (env.IsDevelopment())
@@ -71,8 +72,9 @@ namespace MyPws
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();
+				endpoints.MapRazorPages();
 			});
-			
+			dc.Database.Migrate();
 		}
 	}
 }

@@ -37,7 +37,7 @@ namespace MyPWS.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<PWSList>>> GetPws()
         {
-            var pwsList = await (from p in _context.Pws select new PWSList { Id = p.Id, Alt = p.Alt, Desc = p.Desc, Lat = p.Lat, Lon = p.Lon, Name = p.Name }).ToListAsync();
+            var pwsList = await (from p in _context.Pws select new PWSList { Id = p.Id, Alt = p.Alt, Desc = p.Desc, GpsCoordinates= p.GpsCoordinates , Name = p.Name }).ToListAsync();
             if (pwsList == null || pwsList.Count == 0)
             {
                 return NotFound(Constants.NoPWS);
@@ -62,7 +62,7 @@ namespace MyPWS.API.Controllers
             {
                 return NotFound(Constants.NoPWS);
             }
-            PWSDetail pws = await (from p in _context.Pws where p.IdPws == cachePwsWeather.IdPws select new PWSDetail { Alt = p.Alt, Desc = p.Desc, Id = p.Id, Lat = p.Lat, Lon = p.Lon, Name = p.Name, Pwd = p.Pwd }).FirstOrDefaultAsync();
+            PWSDetail pws = await (from p in _context.Pws where p.IdPws == cachePwsWeather.IdPws select new PWSDetail { Alt = p.Alt, Desc = p.Desc, Id = p.Id, GpsCoordinates = p.GpsCoordinates, Name = p.Name, Pwd = p.Pwd }).FirstOrDefaultAsync();
 
             if (pws == null)
             {
@@ -97,7 +97,7 @@ namespace MyPWS.API.Controllers
                 return NotFound("can't add pws");
             }
 
-            _context.Pws.Add(new Pws() {Alt = pws.Alt, Desc = pws.Desc, Id = pws.Id, Lat = pws.Lat, Lon  = pws.Lon, Name = pws.Name,  Pwd = pws.Pwd});
+            _context.Pws.Add(new Pws() {Alt = pws.Alt, Desc = pws.Desc, Id = pws.Id, GpsCoordinates = pws.GpsCoordinates, Name = pws.Name,  Pwd = pws.Pwd});
             await _context.SaveChangesAsync();
 
             return Created($"Pws/{pws.Id}/{pws.Pwd}", pws);

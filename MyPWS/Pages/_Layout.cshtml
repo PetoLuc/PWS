@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <header>
+        <h1>PWS Data</h1>
+    </header>
+    <main>
+    <div>
+        @RenderBody()
+    </div>
+    </main>
+    <footer>
+        Copyright &copy; @DateTime.Today.Year - built using ASP.NET @Environment.Version
+    </footer>
+</body>
+</html>

@@ -1,0 +1,19 @@
+﻿@page
+@model MyPWS.Pages.IndexModel
+@{
+}
+<ul>
+    <li>
+        <label asp-for = "@Model.LastWeather.Dateutc"></label><span>@Model?.LastWeather?.Dateutc</span>                
+   </li>
+   <li>
+       @nameof(@Model.LastWeather.Baromhpa) <span>@Model?.LastWeather?.Baromhpa</span>
+   </li>
+   <li>
+       @nameof(@Model.LastWeather.Dailyrainmm) <span>@Model?.LastWeather?.Dailyrainmm</span>
+   </li>
+   <li>
+       @nameof(@Model.LastWeather.Dewptc) <span>@Model?.LastWeather?.Dewptc</span>
+   </li>
+
+</ul>

@@ -1,9 +1,12 @@
-﻿using System;
+﻿using NetTopologySuite.Geometries;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyPWS.Models.pwsstore
 {
+    [Table("PWS")]
     public partial class Pws
     {
         public Pws()
@@ -18,16 +21,13 @@ namespace MyPWS.Models.pwsstore
         public string Id { get; set; }
 
         [Required, MaxLength(45)]        
-        public string Pwd { get; set; }
-        
-        [Required]
-        public decimal Lat { get; set; }
-
-        [Required]
-        public decimal Lon { get; set; }
+        public string Pwd { get; set; }        
 
         [Required]
         public short Alt { get; set; }
+
+        public Point GpsCoordinates { get; set; }
+
         public string Desc { get; set; }
 
         [Required, MaxLength(45)]        

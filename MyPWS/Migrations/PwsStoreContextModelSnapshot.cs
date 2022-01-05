@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyPWS.Models.pwsstore;
+using NetTopologySuite.Geometries;
 
 #nullable disable
 
@@ -70,16 +71,13 @@ namespace MyPWS.Migrations
                     b.Property<string>("Desc")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Point>("GpsCoordinates")
+                        .HasColumnType("geography");
+
                     b.Property<string>("Id")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<decimal>("Lat")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Lon")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -93,7 +91,7 @@ namespace MyPWS.Migrations
 
                     b.HasKey("IdPws");
 
-                    b.ToTable("Pws");
+                    b.ToTable("PWS");
                 });
 
             modelBuilder.Entity("MyPWS.Models.pwsstore.Weather", b =>
